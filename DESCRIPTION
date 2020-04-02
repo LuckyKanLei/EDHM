@@ -1,0 +1,41 @@
+Package: EDHM
+Type: Package
+Title: Editable distributed hydrological model
+Version: 0.1.0
+Author: person("Kan", "Lei", email = "mr_moment@outlook.com", role = "aut")
+Maintainer: Kan Lei <mr_moment@outlook.com>
+Description: Realization method of basic hydrological module.
+    Realize flexible switching between modules and build a complete runoff model.
+    All calculation methods support vectorization (matrix) calculation, 
+    which is convenient to build distributed hydrological model.
+    Six basic modules have been realized: 
+    evapotranspiration, closure, runoff generation, groundwater and confluence.
+    1. Evapotranspiration module includes two processes: 
+    potential (Reference) evapotranspiration and actual evapotranspiration. 
+    There are two methods for reference evapotranspiration: Hargreaves, Penman. 
+    There is one method to actually evaporate: VIC.
+    2. There is a method for in module: Gash.
+    3. There are four methods for the runoff module: OIER, SER, VIC, VM.
+    4. There is a method for groundwater module: VIC.
+    5. The base flow module has one method: ARNO.
+    6. there are three methods of Instantaneous unit hydrograph: Nash, RuiXF, Shipeng.
+    7. There is an existing method of route module: G2RES, 
+    but it can still be designed arbitrarily.
+    Due to the limitation of the author 's personal ability, there may be some shortcomings or mistakes. 
+    I hope to contact myself, and I will make corrections in time. 
+    It is also expected to be able to communicate with more friends 
+    the simulation methods of the distributed hydrological model.
+Imports:
+    VectorTools,
+    OptimizationPrg,
+    HMtools,
+    stats,
+    plyr,
+    openxlsx,
+    hydroGOF,
+    hydroTSM,
+    purrr
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.0
