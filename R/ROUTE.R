@@ -104,11 +104,10 @@ fctMakeGridTranslateMatrix <- function(Grid2AimGrid, AimID){
 #' @return vector of fluss
 #' @export
 fctGrid2AimGridFind <- function(l,m, AimGridID, GridID, FlowDirection){
-  constNull <- attr(FlowDirection, "Null")
   n = 0
   j = l
   k = m
-  while((GridID[j,k] != constNull)){
+  while(!is.na(GridID[j,k])){
     f = FlowDirection[j,k]
     if(f == 1) {
       j = j-1
