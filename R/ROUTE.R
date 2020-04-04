@@ -177,8 +177,8 @@ fctGrid2AimGridFind <- function(l,m, AimGridID, GridID, FlowDirection){
 #' @export
 fctGrid2AimGrid <- function(OriginalGridID, AimGridID, GridID, FlowDirection, GridDEM){
   Grid2AimGrid <- matrix(0, dim(OriginalGridID)[1] - dim(AimGridID)[1], 4)
-  infoGridRowN <- dim(GridID)[1]  #the rows number of FLOWDRIC
-  infoGridColN <- dim(GridID)[2]   #the clows number of FLOWDRIC
+  infoGridRowN <- attr(GridID, "nrows")  #the rows number of FLOWDRIC
+  infoGridColN <- attr(GridID, "ncols")   #the clows number of FLOWDRIC
 
   i = 1
   for(m in 1:infoGridColN){
