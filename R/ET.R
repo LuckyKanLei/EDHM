@@ -157,7 +157,7 @@ ET.VIC <- function(InList, PaList, ...){
   AerodynamicResistance <- InList$AerodynamicResistance
   ArchitecturalResistance <- InList$ArchitecturalResistance
   StomatalResistance <- InList$StomatalResistance
-  
+
   paSoilMoistureCapacityB <- PaList$paSoilMoistureCapacityB
   EvaporationCnopyMax <- (MoistureVolume / MoistureCapacityMax)^0.6667 *
     (AerodynamicResistance / (AerodynamicResistance + ArchitecturalResistance)) * RET

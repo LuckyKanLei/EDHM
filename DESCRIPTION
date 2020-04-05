@@ -1,7 +1,7 @@
 Package: EDHM
 Type: Package
 Title: Editable distributed hydrological model
-Version: 0.1.0
+Version: 0.1.1
 Author: person("Kan", "Lei", email = "mr_moment@outlook.com", role = "aut")
 Maintainer: Kan Lei <mr_moment@outlook.com>
 Description: Realization method of basic hydrological module.
@@ -35,6 +35,8 @@ Imports:
     hydroGOF,
     hydroTSM,
     purrr
+Depends:
+    R (>= 3.0.0)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
