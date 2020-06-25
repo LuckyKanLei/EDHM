@@ -64,7 +64,6 @@ SNOWBlowing <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
   lag_one <- InData$LandData$LagOneSlope
   sigma_slope <- InData$LandData$SigmaSlope
 
-  Ls <- InData$Energy$SublimatLatentHeat
   fe <- InData$VegData$Fetch
 
   displacement <- InData$Aerodyna$DisplacCanopy
@@ -82,6 +81,7 @@ SNOWBlowing <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
   Dt <- Param$TimeStepSec
 
   InData$Energy$SublimatLatentHeat <- calc_latent_heat_of_sublimation(Tair)
+  Ls <- InData$Energy$SublimatLatentHeat
 
   #### Calculate some general variables, that don't depend on wind speed. ####
   #### Age in hours ####
