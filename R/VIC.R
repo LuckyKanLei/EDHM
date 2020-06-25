@@ -94,7 +94,7 @@ InListMake <- function(ClsName, ...) UseMethod("InListMake", ClsName)
 #' UPMethondList = list("Shipeng", "Shipeng", "Shipeng", "Shipeng")
 #' VICInList <- InListMake(ClsNa,
 #'                             "1989-1-1",
-#'                             "1993-12-31",
+#'                             "1989-1-6",
 #'                             MetroList,
 #'                             GeoList,
 #'                             GridList,
@@ -269,7 +269,7 @@ MODELL <- function(VorIn, VorPa) UseMethod("MODELL", VorIn)
 #' UPMethondList = list("Shipeng", "Shipeng", "Shipeng", "Shipeng")
 #' VICInList <- InListMake(ClsNa,
 #'                             "1989-1-1",
-#'                             "1993-12-31",
+#'                             "1989-1-6",
 #'                             MetroList,
 #'                             GeoList,
 #'                             GridList,

@@ -34,7 +34,8 @@ Imports:
     openxlsx,
     hydroGOF,
     hydroTSM,
-    purrr
+    purrr,
+    magrittr
 Depends:
     R (>= 3.0.0)
 License: GPL-3

@@ -116,7 +116,7 @@ class(ClsNa) <- tail(ClsNa, 1)
 UPMethondList = list("Shipeng", "Shipeng", "Shipeng", "Shipeng")
 VICInList <- InListMake(ClsNa,
                             "1989-1-1",
-                            "1993-12-31",
+                            "1989-1-6",
                             MetroList,
                             GeoList,
                             GridList,
