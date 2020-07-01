@@ -5,7 +5,7 @@
 #' Kobayashi, D., 1986, Snow Accumulation on a Narrow Board,
 #' Cold Regions Science and Technology, (13), pp. 239-245. Figure 4.
 #' @importFrom stats runif
-#' @importFrom  HMtools mergeData deleteData viewArgum checkData
+#' @importFrom  HMtools mergeData deleteData viewArgum checkData putUnit
 #' @param InData indata list, use SNOWIntercept(runMode = "VIEW") view the variables and theirs structures
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
 #' the other parameters depednd on the actuell model, eg. TimeStepSec, gridN.
@@ -39,6 +39,8 @@ SNOWIntercept <- function(InData, Param, runMode = "RUN", viewGN = 3) {
     MetData <- data.frame(TAir = rep(DBL_EPSILON, viewGN),
                           AirDensity = rep(DBL_EPSILON, viewGN), VaporPressure = rep(DBL_EPSILON, viewGN),
                           AirPressure = rep(DBL_EPSILON, viewGN), VaporPressDefficit = rep(DBL_EPSILON, viewGN))
+    MetData <- putUnit(MetData, c("Cel", "kg/m3", "kPa", "kPa", "100%"))
+
     InData0 <- list(RainFall = RainFall, SnowFall = SnowFall, PVegVaporFlux = PVegVaporFlux,
                     InterceptRain = InterceptRain, InterceptSnow = InterceptSnow, EvapCanopy = EvapCanopy,
                     Energy = Energy, Snow = Snow, Aerodyna = Aerodyna, VegData = VegData, MetData = MetData)

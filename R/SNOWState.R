@@ -1,7 +1,7 @@
 #' @title SNOWState
 #' @description Calculate snow state.
 #' @importFrom stats runif
-#' @importFrom  HMtools mergeData deleteData viewArgum checkData leftjoinData
+#' @importFrom  HMtools mergeData deleteData viewArgum checkData leftjoinData putUnit
 #' @param InData indata list, use SNOWIntercept(runMode = "VIEW") view the variables and theirs structures
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
 #' the other parameters depednd on the actuell model, eg. TimeStepSec, gridN.

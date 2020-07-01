@@ -1,7 +1,7 @@
 #' @title SNOWEnergy
 #' @description Calculate the surface energy balance for the snow pack.
 #' @importFrom stats runif
-#' @importFrom  HMtools mergeData deleteData viewArgum checkData
+#' @importFrom  HMtools mergeData deleteData viewArgum checkData putUnit
 #' @param InData indata list, use SNOWEnergy(runMode = "VIEW") view the variables and theirs structures
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
 #' the other parameters depednd on the actuell model, eg. TimeStepSec, gridN.
@@ -29,6 +29,7 @@ SNOWEnergy <- function(InData, Param, runMode = "RUN", viewGN = 3) {
     VegData <- data.frame(WindAttenuation = runif(viewGN, 0.4, 0.6), Albedo = runif(viewGN, 0.1, 0.2), IsOverstory = rep(T, viewGN))
 
     MetData <- data.frame(ShortWave = runif(viewGN, 1, 2), LongWave = runif(viewGN, 80, 85), TAir = runif(viewGN, -30, 50))
+    MetData <- putUnit(MetData, c("W/m2", "W/m2", "Cel"))
     InData0 <- list(Snow = Snow, Energy = Energy, SnowFall = SnowFall,
 
                     VegData = VegData, MetData = MetData)

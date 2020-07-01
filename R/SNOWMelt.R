@@ -1,7 +1,7 @@
 #' @title SNOWMelt
 #' @description Calculate snow accumulation and melt using an energy balance approach for a two layer snow model
 #' @importFrom stats runif
-#' @importFrom  HMtools mergeData deleteData viewArgum checkData leftjoinData
+#' @importFrom  HMtools mergeData deleteData viewArgum checkData leftjoinData putUnit
 #' @param InData indata list, use SNOWIntercept(runMode = "VIEW") view the variables and theirs structures
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
 #' the other parameters depednd on the actuell model, eg. TimeStepSec, gridN.
@@ -39,6 +39,8 @@ SNOWMelt <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
                           AirPressure = rep(DBL_EPSILON, viewGN),
                     VaporPressDefficit = rep(DBL_EPSILON, viewGN),
                     LongWave = rep(DBL_EPSILON, viewGN))
+    MetData <- putUnit(MetData, c("Cel", "kg/m3", "kPa", "kPa", "100%", "W/m2"))
+
     InData0 <- list(Snow = Snow, Energy = Energy, Aerodyna = Aerodyna, SnowFall = SnowFall,
                    RainFall = RainFall, Blowing = Blowing,
                    # UNSTABLE_SNOW = UNSTABLE_SNOW,

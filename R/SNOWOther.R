@@ -24,7 +24,7 @@ calc_rainonly <- function(air_temp,
 #' @description  Determines from the air temperature what fraction of incoming
 #' precipitation is frozen and unfrozen (snow and rain).
 #' @importFrom stats runif
-#' @importFrom  HMtools mergeData deleteData viewArgum checkData
+#' @importFrom  HMtools mergeData deleteData viewArgum checkData putUnit
 #' @param InData indata list, use SNOWDivid(runMode = "VIEW") view the variables and theirs structures
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
 #' the other parameters depednd on the actuell model, eg. TimeStepSec, gridN.
@@ -42,6 +42,8 @@ SNOWDivid <- function(InData, Param, runMode = "RUN", viewGN = 3) {
   if(runMode == "VIEW" | runMode == "CHECK"){
     fcName <- "SNOWDivid"
     MetData <- data.frame(PrecipitationHoch = runif(viewGN, 0, 90), TAir = runif(viewGN, -30, 50))
+    MetData <- putUnit(MetData, c("mm", "Cel"))
+
     InData0 <- list(MetData = MetData)
     Param0 <- list(SNOW_MAX_SNOW_TEMP = ParamAll$SNOW_MAX_SNOW_TEMP, SNOW_MIN_RAIN_TEMP = ParamAll$SNOW_MIN_RAIN_TEMP)
     Arguments <- list(InData = InData0, Param = Param0)
@@ -76,7 +78,7 @@ SNOWDivid <- function(InData, Param, runMode = "RUN", viewGN = 3) {
 #' WindUref, you need to multiply the here calculated wind speeds by WindUref
 #' and divide the here calculated aerodynamic resistances by WindUref.
 #' @importFrom stats runif
-#' @importFrom  HMtools mergeData deleteData viewArgum checkData
+#' @importFrom  HMtools mergeData deleteData viewArgum checkData putUnit
 #' @param InData indata list, use SNOWAerodyna(runMode = "VIEW") view the variables and theirs structures
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
 #' the other parameters depednd on the actuell model, eg. TimeStepSec, gridN.
@@ -94,6 +96,7 @@ SNOWAerodyna <- function(InData, Param, runMode = "RUN", viewGN = 3) {
   if(runMode == "VIEW" | runMode == "CHECK"){
     fcName <- "SNOWAerodyna"
     MetData <- data.frame(WindSpeed = runif(viewGN, 0, 90))
+    MetData <- putUnit(MetData, c("m/s"))
     VegData <- data.frame(IsOverstory = rep(T, viewGN),
                           VegHeight = runif(viewGN, 0.5, 20),
                           TrunkRatio = runif(viewGN, 0.1, 0.9),

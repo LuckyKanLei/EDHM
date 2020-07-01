@@ -2,7 +2,7 @@
 #' @description Calculate energy of sublimation from blowing snow.
 #' Calculate sublimation from blowing snow
 #' @importFrom stats runif
-#' @importFrom  HMtools mergeData deleteData viewArgum checkData
+#' @importFrom  HMtools mergeData deleteData viewArgum checkData putUnit
 #' @param InData indata list, use SNOWIntercept(runMode = "VIEW") view the variables and theirs structures
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
 #' the other parameters depednd on the actuell model, eg. TimeStepSec, gridN.
@@ -23,13 +23,17 @@ SNOWBlowing <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
   if(runMode == "VIEW" | runMode == "CHECK"){
     fcName <- "SNOWBlowing"
 
-    Snow <- data.frame(Depth = runif(viewGN, 0, 50), LastSnow = rep(1, viewGN), SurfWater = runif(viewGN, 0, 50))
+    Snow <- data.frame(Depth = runif(viewGN, 0, 0.5), LastSnow = rep(1, viewGN), SurfWater = runif(viewGN, 0, 50))
+    Snow <- putUnit(Snow, c("m", "timeStep", "m"))
     Energy <- data.frame(TSnow = runif(viewGN, -30, 5))
     Aerodyna <- data.frame(ReferHeightSnow = runif(viewGN, 2, 2), RoughCanopy = runif(viewGN, 0.02, 0.52),
                            RoughSnow = runif(viewGN, 0.002, 0.0052), DisplacCanopy = runif(viewGN, 0.2, 1.7), WindSpeedSnow = runif(viewGN, 2, 17))
     MetData <- data.frame(TAir = runif(viewGN, -30, 50), AirDensity = runif(viewGN, 1, 2), VaporPressure = runif(viewGN, 0.01, 0.2))
+    MetData <- putUnit(MetData, c("Cel", "kg/m3", "kPa"))
     VegData <- data.frame(Fetch = runif(viewGN, 0.1, 0.3))
+    VegData <- putUnit(VegData, c("100%"))
     LandData <- data.frame(LagOneSlope = runif(viewGN, 0.5, 0.5), SigmaSlope = runif(viewGN, 0.6, 0.8))
+    LandData <- putUnit(LandData, c("100%", "100%"))
 
 
     InData0 <- list(Snow = Snow, Energy = Energy, Aerodyna = Aerodyna,
