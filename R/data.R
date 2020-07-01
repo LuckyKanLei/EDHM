@@ -76,11 +76,6 @@
 #' }
 "GridList"
 
-#' #' σ-Stefan-Boltzmann constant [4.903 10-9 MJ K-4 m-2 day-1]
-#' "CONST_StefanBoltzmann"
-#'
-#' #' Karman’s constant [0.40]
-#' "CONST_Karman"
 
 
 #' all parameters.
