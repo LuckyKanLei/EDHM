@@ -17,35 +17,37 @@
 #' \item "CHECK": chek the structure of the Arguments
 #' }
 #' @param viewGN grid nummer for "VIEW" mode.
-#' @return use SNOWIntercept(runMode = "VIEW") view the outputs and theirs structure
+#' @param ... other parameters
+#' @return use INTERCEPTION.SNOWVIC(runMode = "VIEW") view the outputs and theirs structure
+#' @export INTERCEPTION.SNOWVIC
 #' @export
-SNOWIntercept <- function(InData, Param, runMode = "RUN", viewGN = 3) {
+INTERCEPTION.SNOWVIC <- function(InData, Param, runMode = "RUN", viewGN = 3, ...) {
   ## "VIEW" and "CHECK" mode ####
   if(runMode == "VIEW" | runMode == "CHECK"){
-    fcName <- "SNOWIntercept"
+    fcName <- "INTERCEPTION.SNOWVIC"
     RainFall <- runif(viewGN, 0, 50)
     SnowFall <- runif(viewGN, 0, 50)
-    InterceptRain <- runif(viewGN, 0, 50)
-    InterceptSnow <- runif(viewGN, 0, 50)
-    EvapCanopy <- runif(viewGN, 0, 50)
-    PVegVaporFlux <- runif(viewGN, 0, 50)
-    Energy <- data.frame(TFoliage = runif(viewGN, -30, 50), TCanopy = runif(viewGN, -30, 50), TSnow = runif(viewGN, -30, 5),
-                         TSurf = runif(viewGN, -30, 50), VaporizLatentHeat = runif(viewGN, 200000, 500000),
+    Prec <- data.frame(RainFall = RainFall, SnowFall = SnowFall)
+    InterceptSnow <- InterceptRain <- rep(0, viewGN)
+    Intercept <- data.frame(InterceptSnow = InterceptSnow, InterceptRain = InterceptRain)
+    ET <- data.frame(EvaporationCanopy = runif(viewGN, 0, 50))
+    Atmos <- data.frame(PVegVaporFlux = runif(viewGN, 0, 50))
+    Energy <- data.frame(TFoliage = rep(0, viewGN), TCanopy = rep(0, viewGN), TSnow = rep(0, viewGN),
+                         TSurf = rep(0, viewGN), VaporizLatentHeat = runif(viewGN, 200000, 500000),
                          ShortOverIn = runif(viewGN, 1, 2), LongOverIn = runif(viewGN, 80, 85))
-    Snow <- data.frame(Coverage = runif(viewGN, 0, 1))
+    Snow <- data.frame(Coverage = rep(0, viewGN))
     Aerodyna <- data.frame(DisplacCanopy = rep(DBL_EPSILON, viewGN), WindSpeedCanopy = rep(DBL_EPSILON, viewGN), AerodynaResistCanopy = rep(DBL_EPSILON, viewGN),
                            ReferHeightCanopy = rep(DBL_EPSILON, viewGN), RoughCanopy = rep(DBL_EPSILON, viewGN))
     VegData <- data.frame(MaxIntercept = rep(DBL_EPSILON, viewGN), Albedo = rep(DBL_EPSILON, viewGN), LAI = rep(DBL_EPSILON, viewGN), IsOverstory = rep(DBL_EPSILON, viewGN))
     MetData <- data.frame(TAir = rep(DBL_EPSILON, viewGN),
                           AirDensity = rep(DBL_EPSILON, viewGN), VaporPressure = rep(DBL_EPSILON, viewGN),
-                          AirPressure = rep(DBL_EPSILON, viewGN), VaporPressDefficit = rep(DBL_EPSILON, viewGN))
-    MetData <- putUnit(MetData, c("Cel", "kg/m3", "kPa", "kPa", "100%"))
+                          AirPressure = rep(DBL_EPSILON, viewGN), VaporPressDeficit = rep(DBL_EPSILON, viewGN))
+    MetData <- putUnit(MetData, c("Cel", "kg/m3", "kPa", "kPa", "kPa"))
 
-    InData0 <- list(RainFall = RainFall, SnowFall = SnowFall, PVegVaporFlux = PVegVaporFlux,
-                    InterceptRain = InterceptRain, InterceptSnow = InterceptSnow, EvapCanopy = EvapCanopy,
+    InData0 <- list(Prec = Prec, Intercept = Intercept, Atmos = Atmos, ET = ET,
                     Energy = Energy, Snow = Snow, Aerodyna = Aerodyna, VegData = VegData, MetData = MetData)
     Param0 <- list(TimeStepSec = 3600,
-                   gridN = viewGN,
+                   GridN = viewGN,
                    EMISS_GRND = ParamAll$EMISS_GRND, EMISS_SNOW = ParamAll$EMISS_SNOW,
                    EMISS_VEG = ParamAll$EMISS_VEG,
                    HUGE_RESIST = ParamAll$HUGE_RESIST, SNOW_DT = ParamAll$SNOW_DT,
@@ -79,25 +81,25 @@ SNOWIntercept <- function(InData, Param, runMode = "RUN", viewGN = 3) {
   Wind <- InData$Aerodyna$WindSpeedCanopy
 
   Dt <- Param$TimeStepSec
-  gridN <- Param$gridN
+  gridN <- Param$GridN
 
   ExcessSnowMelt <- PotSnowMelt <- Overload <- InterceptRainFract <- InterceptSnowFract <- rep(0, gridN)
 
   Energy <- list()
 
   ####  Convert Units from VIC (mm -> m)  ####
-  InData$RainFall <- InData$RainFall / MM_PER_M
-  InData$SnowFall <- InData$SnowFall / MM_PER_M
-  InData$InterceptRain <- InData$InterceptRain / MM_PER_M
-  InData$InterceptSnow <- InData$InterceptSnow / MM_PER_M
-  RainFall <- InData$RainFall
-  SnowFall <- InData$SnowFall
-  InterceptRain <- InData$InterceptRain
-  InterceptSnow <- InData$InterceptSnow
+  InData$Prec$RainFall <- InData$Prec$RainFall / MM_PER_M
+  InData$Prec$SnowFall <- InData$Prec$SnowFall / MM_PER_M
+  InData$Intercept$InterceptRain <- InData$Intercept$InterceptRain / MM_PER_M
+  InData$Intercept$InterceptSnow <- InData$Intercept$InterceptSnow / MM_PER_M
+  RainFall <- InData$Prec$RainFall
+  SnowFall <- InData$Prec$SnowFall
+  InterceptRain <- InData$Intercept$InterceptRain
+  InterceptSnow <- InData$Intercept$InterceptSnow
   InterceptRainOrg <- InterceptRain
 
-  InData$EvapC <- InData$EvapC / MM_PER_M
-  InData$PVegVaporFlux <- InData$PVegVaporFlux / MM_PER_M
+  InData$ET$EvaporationCanopy <- InData$ET$EvaporationCanopy / MM_PER_M
+  InData$Atmos$PVegVaporFlux <- InData$Atmos$PVegVaporFlux / MM_PER_M
   MaxInt <- InData$VegData$MaxIntercept / MM_PER_M
 
   InitialSnowInt <- InterceptSnow
@@ -166,7 +168,7 @@ SNOWIntercept <- function(InData, Param, runMode = "RUN", viewGN = 3) {
   RainThroughFall <- (InterceptRain + RainFall - MaxWaterInt) * (!judgeIRM)
   InterceptRain <- (InterceptRain + RainFall) * judgeIRM + MaxWaterInt * (!judgeIRM)
   ## Liquid water in canopy too thin for EB calculations let it fall through
-  judgeRI <- (RainFall == 0 && InterceptRain < Param$SNOW_MIN_SWQ_EB_THRES)
+  judgeRI <- (RainFall == 0 & InterceptRain < Param$SNOW_MIN_SWQ_EB_THRES)
   RainThroughFall <- (RainThroughFall + InterceptRain) * judgeRI + RainThroughFall * (!judgeRI)
   InterceptRain <- InterceptRain * (!judgeRI)
   ####  at this point we have calculated the amount of snowfall intercepted and
@@ -213,12 +215,12 @@ SNOWIntercept <- function(InData, Param, runMode = "RUN", viewGN = 3) {
   Tupper <- (Tfoliage + Param$SNOW_DT)
   Tlower <- (Tfoliage - Param$SNOW_DT)
 
-  TfoliageTem <- eindim618Vector(calcCanopyRestTerm,
-                                 Tlower, Tupper,
-                                 0.0,
-                                 umkriesn = 20,
-                                 InData = InData, Param = Param)
-  Tfoliage <- TfoliageTem
+  # TfoliageTem <- eindim618Vector(calcCanopyRestTerm,
+  #                                Tlower, Tupper,
+  #                                0.0,
+  #                                umkriesn = 20,
+  #                                InData = InData, Param = Param)
+  # Tfoliage <- TfoliageTem
   Tfoliage[which((Tfoliage <= -998))] <- OldTfoliage[which((Tfoliage <= -998))]
 
   InData$Energy$TFoliage <- Tfoliage
@@ -320,11 +322,11 @@ SNOWIntercept <- function(InData, Param, runMode = "RUN", viewGN = 3) {
   InterceptSnow <- InterceptSnow * MM_PER_M
   Tfoliage[which(!overstory)] <- air_temp[which(!overstory)]
   Energy$TFoliage <- Tfoliage
-  return(list(InterceptSnow = InterceptSnow,
-              InterceptRain = InterceptRain,
-              VegVaporFlux = VaporMassFlux,
-              RainFall = RainFall,
-              SnowFall = SnowFall,
+  return(list(Intercept = data.frame(InterceptSnow = InterceptSnow,
+                              InterceptRain = InterceptRain),
+              Atmos = data.frame(VegVaporFlux = VaporMassFlux),
+              Prec = data.frame(RainFall = RainFall,
+                                SnowFall = SnowFall),
               Energy = as.data.frame(Energy)))
 
 }

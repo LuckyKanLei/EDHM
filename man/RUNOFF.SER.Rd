@@ -4,22 +4,31 @@
 \alias{RUNOFF.SER}
 \title{SoilInfiltration in Saturation ExcessRunoff modell}
 \usage{
-\method{RUNOFF}{SER}(InList, PaList, ...)
+\method{RUNOFF}{SER}(InData, Param, runMode = "RUN", viewGN = 3, ...)
 }
 \arguments{
-\item{InList}{3-list of:
+\item{InData}{3-list of:
 \itemize{
 \item PrecipitationHoch
 \item SoilMoistureCapacityMax
 \item SoilMoistureVolum
 }}
 
-\item{PaList}{1-list of:
+\item{Param}{1-list of:
 \itemize{
 \item paSoilMoistureCapacityB
 }}
 
-\item{...}{other Paramater and inputdata}
+\item{runMode}{mode to run the function, there three mode:
+\itemize{
+\item "RUN": default, run the function like general faunction
+\item "VIEW": view the structures of Arguments and Output(return)
+\item "CHECK": chek the structure of the Arguments
+}}
+
+\item{viewGN}{grid nummer for "VIEW" mode.}
+
+\item{...}{other Parmeters}
 }
 \value{
 2-list of:

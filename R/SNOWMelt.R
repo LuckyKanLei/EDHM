@@ -6,7 +6,6 @@
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
 #' the other parameters depednd on the actuell model, eg. TimeStepSec, gridN.
 #' and use SNOWIntercept(runMode = "VIEW") view the structure
-#' @param Options Optionslist, alle the options for model is TURE seted as default,
 #' and use SNOWMelt(runMode = "VIEW") view the options structure and set the options
 #' @param runMode mode to run the function, there three mode:
 #' \itemize{
@@ -17,15 +16,15 @@
 #' @param viewGN grid nummer for "VIEW" mode.
 #' @return use SNOWIntercept(runMode = "VIEW") view the outputs and theirs structure
 #' @export
-SNOWMelt <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
+SNOWMelt <- function(InData, Param, runMode = "RUN", viewGN = 3) {
   ## "VIEW" and "CHECK" mode ####
   if(runMode == "VIEW" | runMode == "CHECK"){
     fcName <- "SNOWMelt"
-    SurfWater <- runif(viewGN, 0, 0.100)
-    PackWater <- runif(viewGN, 0, 0.100)
-    Snow <- data.frame(Density = runif(viewGN, 200, 800), Depth = runif(viewGN,0, 800), Coverage = runif(viewGN,0, 1),
-                 SWQ = SurfWater + PackWater + runif(viewGN,0, 0.0800), SurfWater = SurfWater, SurfTemp = runif(viewGN, -30, 10),
-                 PackTemp = runif(viewGN, -30, 10), PackWater = PackWater)
+    SurfWater <- rep(0, viewGN)
+    PackWater <- rep(0, viewGN)
+    Snow <- data.frame(Density = runif(viewGN, 200, 800), Depth = rep(0, viewGN), Coverage = rep(0, viewGN),
+                 SWQ = rep(0, viewGN), SurfWater = SurfWater, SurfTemp = rep(0, viewGN),
+                 PackTemp = rep(0, viewGN), PackWater = PackWater)
     Energy <- data.frame(TCanopy = runif(viewGN, -10, 10), TGrnd = runif(viewGN, -10, 10),
                          # VaporizLatentHeat = rep(DBL_EPSILON, viewGN),
                    NetShortSnow = runif(viewGN, 1, 2))
@@ -37,28 +36,28 @@ SNOWMelt <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
     # UNSTABLE_SNOW <- rep(F, 10)
     MetData <- data.frame(TAir = runif(viewGN, -30, 50), AirDensity = rep(DBL_EPSILON, viewGN), VaporPressure = rep(DBL_EPSILON, viewGN),
                           AirPressure = rep(DBL_EPSILON, viewGN),
-                    VaporPressDefficit = rep(DBL_EPSILON, viewGN),
+                    VaporPressDeficit = rep(DBL_EPSILON, viewGN),
                     LongWave = rep(DBL_EPSILON, viewGN))
-    MetData <- putUnit(MetData, c("Cel", "kg/m3", "kPa", "kPa", "100%", "W/m2"))
+    MetData <- putUnit(MetData, c("Cel", "kg/m3", "kPa", "kPa", "kPa", "W/m2"))
 
-    InData0 <- list(Snow = Snow, Energy = Energy, Aerodyna = Aerodyna, SnowFall = SnowFall,
-                   RainFall = RainFall, Blowing = Blowing,
+    InData0 <- list(Snow = Snow, Energy = Energy, Aerodyna = Aerodyna,
+                    Prec = list(SnowFall = SnowFall, RainFall = RainFall), Atmos = list(Blowing = Blowing),
                    # UNSTABLE_SNOW = UNSTABLE_SNOW,
                    MetData = MetData)
     Param0 <- list(TimeStepSec = 3600,
-                   gridN = viewGN,
+                   GridN = viewGN,
                    EMISS_SNOW = ParamAll$EMISS_SNOW, HUGE_RESIST = ParamAll$HUGE_RESIST,
                   SNOW_CONDUCT = ParamAll$SNOW_CONDUCT, SNOW_DEPTH_THRES = ParamAll$SNOW_DEPTH_THRES,
                   SNOW_DT = ParamAll$SNOW_DT, SNOW_LIQUID_WATER_CAPACITY = ParamAll$SNOW_LIQUID_WATER_CAPACITY,
                   SVP_A = ParamAll$SVP_A, SVP_B = ParamAll$SVP_B, SVP_C = ParamAll$SVP_C,
-                  SNOW_MAX_SURFACE_SWE = ParamAll$SNOW_MAX_SURFACE_SWE, SNOW_MIN_SWQ_EB_THRES = ParamAll$SNOW_MIN_SWQ_EB_THRES)
-    Options0 <- list(SPATIAL_SNOW = TRUE)
-    Arguments <- list(InData = InData0, Param = Param0, Options = Options0)
+                  SNOW_MAX_SURFACE_SWE = ParamAll$SNOW_MAX_SURFACE_SWE, SNOW_MIN_SWQ_EB_THRES = ParamAll$SNOW_MIN_SWQ_EB_THRES,
+                  SPATIAL_SNOW = TRUE)
+    Arguments <- list(InData = InData0, Param = Param0)
     if(runMode == "VIEW"){
       vw <- viewArgum(fcName, Arguments)
       return(list(Arguments = Arguments, Out = vw))
     } else {
-      ck <- checkData(Arguments, list(InData = InData, Param = Param, Options = Options), "Arguments")
+      ck <- checkData(Arguments, list(InData = InData, Param = Param), "Arguments")
       return()
     }
   }
@@ -75,14 +74,14 @@ SNOWMelt <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
   Tcanopy <- InData$Energy$TCanopy
   Tgrnd <- InData$Energy$TGrnd
 
-  InData$SnowFall <- InData$SnowFall / MM_PER_M
-  InData$RainFall <- InData$RainFall / MM_PER_M
-  SnowFall <- InData$SnowFall
-  RainFall <- InData$RainFall
+  InData$Prec$SnowFall <- InData$Prec$SnowFall / MM_PER_M
+  InData$Prec$RainFall <- InData$Prec$RainFall / MM_PER_M
+  SnowFall <- InData$Prec$SnowFall
+  RainFall <- InData$Prec$RainFall
   UNSTABLE_SNOW <- F ##?## thin snowpack
 
   delta_t <- Param$TimeStepSec
-  gridN <- Param$gridN
+  gridN <- Param$GridN
   ## Output
   Energy <- list()
   Snow <- data.frame(SWQ = 0,
@@ -93,16 +92,15 @@ SNOWMelt <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
   Snow <- leftjoinData(Snow, InData$Snow)
   Snow$old_swq <- Snow$SWQ
   # Precipitation <- rep(0, gridN)
-  if (Options$SPATIAL_SNOW) {
+  if (Param$SPATIAL_SNOW) {
     #### make snowpack uniform at mean depth ####
     InData$Snow$Coverage[which(SnowFall > 0)] <- 1
     indexCSC <- which((InData$Snow$Coverage > 0 & InData$Snow$Coverage < 1 & SnowFall == 0))
     #### rain falls evenly over grid cell ####
     # Precipitation[indexCSC] <- (RainFall * (1.0 - InData$Snow$Coverage))[indexCSC] ## vic
-    InData$SnowFall[indexCSC] <- (RainFall * (1.0 - InData$Snow$Coverage))[indexCSC] ## lk
-    InData$RainFall[indexCSC] <- (RainFall * InData$Snow$Coverage)[indexCSC]
+    InData$Prec$SnowFall[indexCSC] <- (RainFall * (1.0 - InData$Snow$Coverage))[indexCSC] ## lk
+    InData$Prec$RainFall[indexCSC] <- (RainFall * InData$Snow$Coverage)[indexCSC]
   }
-
   # InitialSwq <- InData$Snow$SWQ
   InData$Energy$OldTSurf <- InData$Snow$SurfTemp
 
@@ -141,14 +139,14 @@ SNOWMelt <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
   InData$SurfaceSnowWater <- SurfaceSwq
   #### vic original ####
   # #### Calculate the surface energy balance for snowTemp <- 0.0 ####
-  SurfTempTem <- eindim618Vector(calcSurfSnowRestTerm,
-                                 (Snow$SurfTemp - Param$SNOW_DT),
-                                 (Snow$SurfTemp + Param$SNOW_DT),
-                                 0.0,
-                                 umkriesn = 20,
-                                 InData = InData, Param = Param)
-
-  Snow$SurfTemp <- SurfTempTem
+  # SurfTempTem <- eindim618Vector(calcSurfSnowRestTerm,
+  #                                (Snow$SurfTemp - Param$SNOW_DT),
+  #                                (Snow$SurfTemp + Param$SNOW_DT),
+  #                                0.0,
+  #                                umkriesn = 20,
+  #                                InData = InData, Param = Param)
+  #
+  # Snow$SurfTemp <- SurfTempTem
   ##*##
   judgeTE <- (Snow$SurfTemp > -998 & Snow$SurfTemp < 999)
   InData$Snow$SurfTemp <- Snow$SurfTemp
@@ -270,14 +268,14 @@ SNOWMelt <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
 
   # MassBalanceError <- (InitialSwq - Snow$SWQ) + (RainFall + SnowFall) - Melt + vapor_flux
   #### return ####
-  Precipitation <- round((InData$Snow$SWQ + InData$SnowFall + InData$RainFall) - (Snow$SWQ) + vapor_flux, 10)
+  Precipitation <- round((InData$Snow$SWQ + InData$Prec$SnowFall + InData$Prec$RainFall) - (Snow$SWQ) + vapor_flux, 10)
   Melt <- Melt * MM_PER_M              #### converts back to mm ####
+  Snow$Melt <- Melt
   Precipitation <- Precipitation * MM_PER_M
-  return(list(Snow = as.data.frame(Snow),
+  return(list(Snow = Snow,
               Energy = as.data.frame(Energy),
-              Melt = Melt,
-              Precipitation = Precipitation,
-              VaporFlux = vapor_flux,
-              SurfaceFlux = surface_flux))
+              Prec = list(Precipitation = Precipitation),
+              # SurfaceFlux = surface_flux,
+              Atmos = list(VaporFlux = vapor_flux)))
 
 }

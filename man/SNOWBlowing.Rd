@@ -4,16 +4,14 @@
 \alias{SNOWBlowing}
 \title{SNOWBlowing}
 \usage{
-SNOWBlowing(InData, Param, Options, runMode = "RUN", viewGN = 3)
+SNOWBlowing(InData, Param, runMode = "RUN", viewGN = 3)
 }
 \arguments{
 \item{InData}{indata list, use SNOWIntercept(runMode = "VIEW") view the variables and theirs structures}
 
 \item{Param}{paramlist, in this R packege ParamAll dataset there are alredy most parameters,
 the other parameters depednd on the actuell model, eg. TimeStepSec, gridN.
-and use SNOWIntercept(runMode = "VIEW") view the structure}
-
-\item{Options}{Optionslist, alle the options for model is TURE seted as default,
+and use SNOWIntercept(runMode = "VIEW") view the structure
 and use SNOWBlowing(runMode = "VIEW") view the options structure and set the options}
 
 \item{runMode}{mode to run the function, there three mode:

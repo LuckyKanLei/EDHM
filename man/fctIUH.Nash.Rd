@@ -4,10 +4,10 @@
 \alias{fctIUH.Nash}
 \title{Instantaneous unit hydrograph in Nash}
 \usage{
-\method{fctIUH}{Nash}(t, InList)
+\method{fctIUH}{Nash}(tt, InList)
 }
 \arguments{
-\item{t}{numrica,time}
+\item{tt}{numrica,time}
 
 \item{InList}{list of Input data}
 }

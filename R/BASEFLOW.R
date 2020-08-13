@@ -1,36 +1,44 @@
 #' caculate Base flow
-#' @param InList list of Input data
-#' @param ... other Paramater and inputdata
+#' @param InData indata list, use SNOWIntercept(runMode = "VIEW") view the variables and theirs structures
+#' @param ... paramlist, in this R packege ParamAll dataset there are alredy most parameters,
 #' @return BASEFLOW
 #' @export
-BASEFLOW <- function(InList, ...) UseMethod("BASEFLOW", InList)
+BASEFLOW <- function(InData, ...) UseMethod("BASEFLOW", InData)
 
 #' baseflow
 #' @references Arnold J G, Srinivasan R, Muttiah R S et al. Large area hydrologic modeling and assessmentpart I: Model Develoment [J]. Journal of the American Water Resources Association, 1998(34):73-89.
-#' @param InList 2-list of:
+#' @param InData 2-list of:
 #' \itemize{
 #' \item SoilMoistureVolume
 #' \item SoilMoistureVolumeMax
 #' }
-#' @param PaList 4-list of:
+#' @param Param 4-list of:
 #' \itemize{
 #' \item paDrainageLossMax
 #' \item paDrainageLossMin
 #' \item paExponentARNOBase
 #' \item paSoilMoistureVolumeARNOBaseThresholdRadio
 #' }
-#' @param ... other Paramater and inputdata
+#' @param runMode mode to run the function, there three mode:
+#' \itemize{
+#' \item "RUN": default, run the function like general faunction
+#' \item "VIEW": view the structures of Arguments and Output(return)
+#' \item "CHECK": chek the structure of the Arguments
+#' }
+#' @param viewGN grid nummer for "VIEW" mode.
+#' @param ... other Parmeters
 #' @return baseflow
+#' @export BASEFLOW.ARNO
 #' @export
-BASEFLOW.ARNO <- function(InList, PaList, ...){
+BASEFLOW.ARNO <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
 
-  SoilMoistureVolume <- InList$SoilMoistureVolume
-  SoilMoistureVolumeMax <- InList$SoilMoistureVolumeMax
+  SoilMoistureVolume <- InData$Ground$MoistureVolume
+  SoilMoistureVolumeMax <- InData$Ground$MoistureCapacityMax
 
-  paExponentARNOBase <- PaList$paExponentARNOBase
-  paSoilMoistureVolumeARNOBaseThresholdRadio <- PaList$paSoilMoistureVolumeARNOBaseThresholdRadio
-  paDrainageLossMax <- PaList$paDrainageLossMax
-  paDrainageLossMin <- PaList$paDrainageLossMin
+  paExponentARNOBase <- Param$ExponentARNOBase
+  paSoilMoistureVolumeARNOBaseThresholdRadio <- Param$ARNOBaseThresholdRadio
+  paDrainageLossMax <- Param$DrainageLossMax
+  paDrainageLossMin <- Param$DrainageLossMin
 
   SoilMoistureVolumeARNOBaseThreshold <- paSoilMoistureVolumeARNOBaseThresholdRadio * SoilMoistureVolumeMax
   TEMMin <- paDrainageLossMin * SoilMoistureVolume / SoilMoistureVolumeMax
@@ -40,6 +48,6 @@ BASEFLOW.ARNO <- function(InList, PaList, ...){
   TEMDiff <- SoilMoistureVolume - SoilMoistureVolumeARNOBaseThreshold
   TEM <- TEMMin
   TEM[which(TEMDiff > 0.0)] <- TEMMax[which(TEMDiff > 0.0)]
-  return(minVector(SoilMoistureVolume, TEM))
+  return(list(Ground = list(BaseFlow = minVector(SoilMoistureVolume, TEM))))
 }
 

@@ -4,12 +4,12 @@
 \alias{BASEFLOW}
 \title{caculate Base flow}
 \usage{
-BASEFLOW(InList, ...)
+BASEFLOW(InData, ...)
 }
 \arguments{
-\item{InList}{list of Input data}
+\item{InData}{indata list, use SNOWIntercept(runMode = "VIEW") view the variables and theirs structures}
 
-\item{...}{other Paramater and inputdata}
+\item{...}{paramlist, in this R packege ParamAll dataset there are alredy most parameters,}
 }
 \value{
 BASEFLOW

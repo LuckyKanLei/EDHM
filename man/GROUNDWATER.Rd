@@ -4,10 +4,10 @@
 \alias{GROUNDWATER}
 \title{GROUNDWATER caculate}
 \usage{
-GROUNDWATER(InList, ...)
+GROUNDWATER(InData, ...)
 }
 \arguments{
-\item{InList}{list of Input data}
+\item{InData}{list of Input data}
 
 \item{...}{other Paramater and inputdata}
 }

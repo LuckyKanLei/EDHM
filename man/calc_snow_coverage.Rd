@@ -7,6 +7,7 @@
 calc_snow_coverage(
   snowfall,
   melt,
+  store_snow,
   store_swq,
   swq,
   old_swq,
@@ -21,6 +22,8 @@ calc_snow_coverage(
 \item{snowfall}{snowfall}
 
 \item{melt}{melt}
+
+\item{store_snow}{store_snow}
 
 \item{store_swq}{store_swq}
 

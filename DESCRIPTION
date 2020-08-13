@@ -1,7 +1,7 @@
 Package: EDHM
 Type: Package
 Title: Editable distributed hydrological model
-Version: 0.1.1
+Version: 0.2.0
 Author: person("Kan", "Lei", email = "mr_moment@outlook.com", role = "aut")
 Maintainer: Kan Lei <mr_moment@outlook.com>
 Description: Realization method of basic hydrological module.
@@ -26,8 +26,6 @@ Description: Realization method of basic hydrological module.
     It is also expected to be able to communicate with more friends 
     the simulation methods of the distributed hydrological model.
 Imports:
-    VectorTools,
-    OptimizationPrg,
     HMtools,
     stats,
     plyr,

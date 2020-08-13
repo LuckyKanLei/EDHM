@@ -4,10 +4,10 @@
 \alias{ReferenceET.Hargreaves}
 \title{ReferenceET with Hargreaves methond}
 \usage{
-\method{ReferenceET}{Hargreaves}(InList, ...)
+\method{ReferenceET}{Hargreaves}(InData, Param, runMode = "RUN", viewGN = 3, ...)
 }
 \arguments{
-\item{InList}{list of: JDay, Latitude, Tmax, Tmin, Tmean
+\item{InData}{list of: JDay, Latitude, Tmax, Tmin, Tmean
 \itemize{
 \item JDay, date
 \item Latitude
@@ -16,7 +16,18 @@
 \item Tmean, oC, Celius
 }}
 
-\item{...}{other Paramater and inputdata}
+\item{Param}{paramlist, in this R packege ParamAll dataset there are alredy most parameters,}
+
+\item{runMode}{mode to run the function, there three mode:
+\itemize{
+\item "RUN": default, run the function like general faunction
+\item "VIEW": view the structures of Arguments and Output(return)
+\item "CHECK": chek the structure of the Arguments
+}}
+
+\item{viewGN}{grid nummer for "VIEW" mode.}
+
+\item{...}{other Parmeters}
 }
 \value{
 ReferenceET with Hargreaves methond

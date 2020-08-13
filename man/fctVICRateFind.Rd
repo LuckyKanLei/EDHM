@@ -10,8 +10,7 @@ fctVICRateFind(
   SoilMoistureCapacityMax,
   SoilMoistureCapacity,
   InfiltrationRateMax,
-  paSoilMoistureCapacityB,
-  paInfiltrationRateB
+  Param
 )
 }
 \arguments{
@@ -25,9 +24,11 @@ fctVICRateFind(
 
 \item{InfiltrationRateMax}{Infiltration Rate Max}
 
-\item{paSoilMoistureCapacityB}{param Soil Moisture Capacity B}
-
-\item{paInfiltrationRateB}{param Infiltration Rate B}
+\item{Param}{2-list of:
+\itemize{
+\item paSoilMoistureCapacityB
+\item paInfiltrationRateB
+}}
 }
 \value{
 rate procent

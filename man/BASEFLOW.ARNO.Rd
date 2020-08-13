@@ -4,16 +4,16 @@
 \alias{BASEFLOW.ARNO}
 \title{baseflow}
 \usage{
-\method{BASEFLOW}{ARNO}(InList, PaList, ...)
+\method{BASEFLOW}{ARNO}(InData, Param, runMode = "RUN", viewGN = 3, ...)
 }
 \arguments{
-\item{InList}{2-list of:
+\item{InData}{2-list of:
 \itemize{
 \item SoilMoistureVolume
 \item SoilMoistureVolumeMax
 }}
 
-\item{PaList}{4-list of:
+\item{Param}{4-list of:
 \itemize{
 \item paDrainageLossMax
 \item paDrainageLossMin
@@ -21,7 +21,16 @@
 \item paSoilMoistureVolumeARNOBaseThresholdRadio
 }}
 
-\item{...}{other Paramater and inputdata}
+\item{runMode}{mode to run the function, there three mode:
+\itemize{
+\item "RUN": default, run the function like general faunction
+\item "VIEW": view the structures of Arguments and Output(return)
+\item "CHECK": chek the structure of the Arguments
+}}
+
+\item{viewGN}{grid nummer for "VIEW" mode.}
+
+\item{...}{other Parmeters}
 }
 \value{
 baseflow

@@ -15,8 +15,7 @@ CalcSubFlux(
   U10,
   Zo_salt,
   FT,
-  Param,
-  Options
+  Param
 )
 }
 \arguments{
@@ -41,8 +40,6 @@ CalcSubFlux(
 \item{FT}{not klar}
 
 \item{Param}{parameters list}
-
-\item{Options}{Options list}
 }
 \value{
 sublimation flux

@@ -4,10 +4,10 @@
 \alias{ReferenceET}
 \title{ReferenceET caculate}
 \usage{
-ReferenceET(InList, ...)
+ReferenceET(InData, ...)
 }
 \arguments{
-\item{InList}{list of Input data}
+\item{InData}{indata list, use SNOWIntercept(runMode = "VIEW") view the variables and theirs structures}
 
 \item{...}{other Paramater and inputdata}
 }

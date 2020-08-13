@@ -255,5 +255,15 @@
 #'
 #' ###############################################################################",
 #' # July average temperature for tree line",
-#' TREELINE_TEMPERATURE = "no description")
-#' use_data(ParamDescript)
+#' TREELINE_TEMPERATURE = "no description",
+#'
+#' ###############################################################################
+#' # options for Snow.VIC
+#' BLOWING_CALC_PROB = "no description",
+#' BLOWING_FETCH = "no description",
+#' BLOWING_SIMPLE = "no description",
+#' BLOWING_SPATIAL_WIND = "no description",
+#' BLOWING_VAR_THRESHOLD = "no description",
+#' SPATIAL_SNOW = "no description"
+#' )
+#' use_data(ParamDescript, overwrite = TRUE)

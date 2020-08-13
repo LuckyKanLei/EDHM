@@ -4,26 +4,12 @@
 \alias{SNOW}
 \title{SNOW}
 \usage{
-SNOW(InData, Param, Options, runMode = "RUN", viewGN = 3)
+SNOW(InData, ...)
 }
 \arguments{
-\item{InData}{indata list, use SNOW(runMode = "VIEW") view the variables and theirs structures}
+\item{InData}{indata list, use SNOWIntercept(runMode = "VIEW") view the variables and theirs structures}
 
-\item{Param}{paramlist, in this R packege ParamAll dataset there are alredy most parameters,
-the other parameters depednd on the actuell model, eg. TimeStepSec, gridN.
-and use SNOW(runMode = "VIEW") view the structure}
-
-\item{Options}{Optionslist, alle the options for model is TURE seted as default,
-and use SNOW(runMode = "VIEW") view the options structure and set the options}
-
-\item{runMode}{mode to run the function, there three mode:
-\itemize{
-\item "RUN": default, run the function like general faunction
-\item "VIEW": view the structures of Arguments and Output(return)
-\item "CHECK": chek the structure of the Arguments
-}}
-
-\item{viewGN}{grid nummer for "VIEW" mode.}
+\item{...}{other arguments}
 }
 \value{
 use SNOW(runMode = "VIEW") view the outputs and theirs structure

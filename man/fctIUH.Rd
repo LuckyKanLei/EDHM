@@ -4,10 +4,10 @@
 \alias{fctIUH}
 \title{Instantaneous unit hydrograph}
 \usage{
-fctIUH(t, InList)
+fctIUH(tt, InList)
 }
 \arguments{
-\item{t}{numrica,time}
+\item{tt}{numrica,time}
 
 \item{InList}{list of Input data}
 }

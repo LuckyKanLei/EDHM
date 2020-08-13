@@ -4,10 +4,10 @@
 \alias{GROUNDWATER.VIC}
 \title{ground water VIC function}
 \usage{
-\method{GROUNDWATER}{VIC}(InList, PaList, ...)
+\method{GROUNDWATER}{VIC}(InData, Param, runMode = "RUN", viewGN = 3, ...)
 }
 \arguments{
-\item{InList}{6-list of:
+\item{InData}{6-list of:
 \itemize{
 \item Evapotranspiration
 \item Interception
@@ -17,12 +17,21 @@
 \item GridSoilParame
 }}
 
-\item{PaList}{1-list of:
+\item{Param}{1-list of:
 \itemize{
 \item paClappHornbergerB
 }}
 
-\item{...}{other Paramater and inputdata}
+\item{runMode}{mode to run the function, there three mode:
+\itemize{
+\item "RUN": default, run the function like general faunction
+\item "VIEW": view the structures of Arguments and Output(return)
+\item "CHECK": chek the structure of the Arguments
+}}
+
+\item{viewGN}{grid nummer for "VIEW" mode.}
+
+\item{...}{other Parmeters}
 }
 \value{
 INTERCEPTION

@@ -4,10 +4,10 @@
 \alias{fctIUH.RuiXF}
 \title{Instantaneous unit hydrograph in RUI XioaFang}
 \usage{
-\method{fctIUH}{RuiXF}(t, InList)
+\method{fctIUH}{RuiXF}(tt, InList)
 }
 \arguments{
-\item{t}{numrica,time}
+\item{tt}{numrica,time}
 
 \item{InList}{list of Input data}
 }

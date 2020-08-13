@@ -7,7 +7,6 @@
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
 #' the other parameters depednd on the actuell model, eg. TimeStepSec, gridN.
 #' and use SNOWIntercept(runMode = "VIEW") view the structure
-#' @param Options Optionslist, alle the options for model is TURE seted as default,
 #' and use SNOWBlowing(runMode = "VIEW") view the options structure and set the options
 #' @param runMode mode to run the function, there three mode:
 #' \itemize{
@@ -18,17 +17,17 @@
 #' @param viewGN grid nummer for "VIEW" mode.
 #' @return use SNOWIntercept(runMode = "VIEW") view the outputs and theirs structure
 #' @export
-SNOWBlowing <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
+SNOWBlowing <- function(InData, Param, runMode = "RUN", viewGN = 3) {
   ## "VIEW" and "CHECK" mode ####
   if(runMode == "VIEW" | runMode == "CHECK"){
     fcName <- "SNOWBlowing"
 
-    Snow <- data.frame(Depth = runif(viewGN, 0, 0.5), LastSnow = rep(1, viewGN), SurfWater = runif(viewGN, 0, 50))
+    Snow <- data.frame(Depth = rep(0, viewGN), LastSnow = rep(1, viewGN), SurfWater = rep(0, viewGN))
     Snow <- putUnit(Snow, c("m", "timeStep", "m"))
-    Energy <- data.frame(TSnow = runif(viewGN, -30, 5))
+    Energy <- data.frame(TSnow = rep(0, viewGN))
     Aerodyna <- data.frame(ReferHeightSnow = runif(viewGN, 2, 2), RoughCanopy = runif(viewGN, 0.02, 0.52),
                            RoughSnow = runif(viewGN, 0.002, 0.0052), DisplacCanopy = runif(viewGN, 0.2, 1.7), WindSpeedSnow = runif(viewGN, 2, 17))
-    MetData <- data.frame(TAir = runif(viewGN, -30, 50), AirDensity = runif(viewGN, 1, 2), VaporPressure = runif(viewGN, 0.01, 0.2))
+    MetData <- data.frame(TAir = rep(0, viewGN), AirDensity = runif(viewGN, 1, 2), VaporPressure = runif(viewGN, 0.01, 0.2))
     MetData <- putUnit(MetData, c("Cel", "kg/m3", "kPa"))
     VegData <- data.frame(Fetch = runif(viewGN, 0.1, 0.3))
     VegData <- putUnit(VegData, c("100%"))
@@ -43,16 +42,16 @@ SNOWBlowing <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
                    BLOWING_MAX_ITER = ParamAll$BLOWING_MAX_ITER, BLOWING_SETTLING = ParamAll$BLOWING_SETTLING,
                    BLOWING_UTHRESH = ParamAll$BLOWING_UTHRESH, BLOWING_KIN_VIS = ParamAll$BLOWING_KIN_VIS,
                    SVP_A = ParamAll$SVP_A, SVP_B = ParamAll$SVP_B, SVP_C = ParamAll$SVP_C,
-                   gridN = viewGN,
-                   TimeStepSec = 3600)
-    Options0 <- list(BLOWING_CALC_PROB = TRUE, BLOWING_FETCH = TRUE, BLOWING_SIMPLE = TRUE,
-                     BLOWING_SPATIAL_WIND = TRUE, BLOWING_VAR_THRESHOLD = TRUE)
-    Arguments <- list(InData = InData0, Param = Param0, Options = Options0)
+                   GridN = viewGN,
+                   TimeStepSec = 3600,
+                   BLOWING_CALC_PROB = TRUE, BLOWING_FETCH = TRUE, BLOWING_SIMPLE = TRUE,
+                   BLOWING_SPATIAL_WIND = TRUE, BLOWING_VAR_THRESHOLD = TRUE)
+    Arguments <- list(InData = InData0, Param = Param0)
     if(runMode == "VIEW"){
       vw <- viewArgum(fcName, Arguments)
       return(list(Arguments = Arguments, Out = vw))
     } else {
-      ck <- checkData(Arguments, list(InData = InData, Param = Param, Options = Options), "Arguments")
+      ck <- checkData(Arguments, list(InData = InData, Param = Param), "Arguments")
       return()
     }
   }
@@ -134,12 +133,12 @@ SNOWBlowing <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
   judgeHV <- (snowdepth < hv)
   Uveg <- (U10 / sqrt(1. + 170 * Nd * (abs(hv - snowdepth)))) * judgeHV + U10 * (!judgeHV)
   prob_occurence <- get_prob(Tair, Age, SurfaceLiquidWater, Uveg)
-  if(!Options$BLOWING_CALC_PROB) prob_occurence <- 1.
+  if(!Param$BLOWING_CALC_PROB) prob_occurence <- 1.
   #### Calculate threshold shear stress. Send 0 for constant or  ####
   #### 1 for variable threshold after Li and Pomeroy (1997)      ####
 
   utshear <- get_thresh(Tair, SurfaceLiquidWater, ZO)
-  if(!Options$BLOWING_VAR_THRESHOLD) utshear <- Param$BLOWING_UTHRESH
+  if(!Param$BLOWING_VAR_THRESHOLD) utshear <- Param$BLOWING_UTHRESH
 
   #### Iterate to find actual shear stress during saltation. ####
 
@@ -148,14 +147,14 @@ SNOWBlowing <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
   Zo_salt <- ShearOut$Zo_salt
   judgeUT <- (ushear > utshear)
   SubFluxOut <- CalcSubFlux(EactAir, es, Zrh, AirDens, utshear,
-                            ushear, fe, Uo, Zo_salt, FT, Param, Options)
+                            ushear, fe, Uo, Zo_salt, FT, Param)
   SubFlux <- (SubFluxOut$SubFlux) * judgeUT
   Transport <- SubFluxOut$Transport
   Transport[which(!judgeUT)] <- 0.0
   Total <- SubFlux * prob_occurence
   TotalTransport <- Transport * prob_occurence
 
-  if (Options$BLOWING_SPATIAL_WIND) {
+  if (Param$BLOWING_SPATIAL_WIND) {
     dim2 <- Param$BLOWING_NUMINCS
     indexHalb <- as.integer(dim2 / 2)
     SubFlux <- LowBundry <- UppBundry <- matrix(0.0, sum(sigma_w != 0.), dim2)
@@ -207,13 +206,13 @@ SNOWBlowing <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
 
 
     prob_occurence <- get_prob(Tair, Age, SurfaceLiquidWater, Uveg)
-    if(!Options$BLOWING_CALC_PROB) prob_occurence <- 1.
+    if(!Param$BLOWING_CALC_PROB) prob_occurence <- 1.
 
     #### Calculate threshold shear stress. Send 0 for constant or  ####
     #### 1 for variable threshold after Li and Pomeroy (1997)      ####
 
     utshear <- get_thresh(Tair, SurfaceLiquidWater, ZO)
-    if(!Options$BLOWING_VAR_THRESHOLD) utshear <- Param$BLOWING_UTHRESH
+    if(!Param$BLOWING_VAR_THRESHOLD) utshear <- Param$BLOWING_UTHRESH
 
     #### Iterate to find actual shear stress during saltation. ####
     U10[which(is.na(U10))] <- 0.
@@ -223,7 +222,7 @@ SNOWBlowing <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
 
     judgeUU <- (ushear > utshear)
     SubFluxOut2 <- CalcSubFlux(EactAir, es, Zrh, AirDens, utshear,
-                               ushear, fe, U10, Zo_salt, FT, Param, Options)
+                               ushear, fe, U10, Zo_salt, FT, Param)
     SubFlux <- (SubFluxOut2$SubFlux) * judgeUU
     Transport <- SubFluxOut2$Transport
     Transport[which(!judgeUU)] <- 0.
@@ -241,8 +240,10 @@ SNOWBlowing <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
   Total <- Total * judgeSD
   TotalTransport <- rowSums(TotalTransport)
   Total <- rowSums(Total)
-  return(list(PVegVaporFlux = TotalTransport * MM_PER_M,
-              Blowing = Total * MM_PER_M))
+  TotalTransport[which(abs(TotalTransport) < DBL_EPSILON)] <- 0.
+  Total[which(abs(Total) < DBL_EPSILON)] <- 0.
+  return(list(Atmos = list(PVegVaporFlux = TotalTransport * MM_PER_M,
+              Blowing = Total * MM_PER_M)))
 }
 
 
@@ -501,7 +502,6 @@ transport_with_height <- function(z,
 #' @param Zo_salt not klar
 #' @param FT not klar
 #' @param Param parameters list
-#' @param Options Options list
 #' @return sublimation flux
 #' @export
 CalcSubFlux <- function(EactAir,
@@ -514,13 +514,12 @@ CalcSubFlux <- function(EactAir,
                         U10,
                         Zo_salt,
                         FT,
-                        Param,
-                        Options) {
+                        Param) {
 
 
   particle <- utshear * 2.8
   #### SBSM:
-  if (Options$BLOWING_SIMPLE) {
+  if (Param$BLOWING_SIMPLE) {
     b <- .25
     undersat_2 <- (((EactAir / es) - 1.) * (1. - .027 * log(Zrh) + 0.027 * log(2))) * (EactAir < es)
     SubFlux <- b * undersat_2 * U10^5. / FT
@@ -533,7 +532,7 @@ CalcSubFlux <- function(EactAir,
     #### Liston and Sturm 1998, eq. 6
     Qsalt <- (Param$BLOWING_CSALT * AirDens / CONST_G) *
       (utshear / ushear) * (ushear * ushear - utshear * utshear)
-    if (Options$BLOWING_FETCH) {
+    if (Param$BLOWING_FETCH) {
       Qsalt <- Qsalt * (1. + (500. / (3. * fe)) * (exp(-3. * fe / 500.) - 1.))
     }
 
@@ -576,7 +575,7 @@ CalcSubFlux <- function(EactAir,
 
     #### Transport at the downstream edge of the fetch in kg/m*s
     Transport <- (suspension_transport + saltation_transport)
-    if (Options$BLOWING_FETCH) {
+    if (Param$BLOWING_FETCH) {
       Transport <- Transport / fe
     }
 

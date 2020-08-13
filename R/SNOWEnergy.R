@@ -19,10 +19,10 @@ SNOWEnergy <- function(InData, Param, runMode = "RUN", viewGN = 3) {
   ## "VIEW" and "CHECK" mode ####
   if(runMode == "VIEW" | runMode == "CHECK"){
     fcName <- "SNOWEnergy"
-    Snow <- data.frame(Coverage = runif(viewGN, 0, 1), LastSnow = rep(1, viewGN),
-                       MELTING = rep(F, viewGN), SWQ = runif(viewGN, 0, 50))
-    Energy <- data.frame(ColdContent = runif(viewGN, 0, 5), TCanopy = runif(viewGN, -30, 50),
-                         TSurf = runif(viewGN, -30, 50), TSnow = runif(viewGN, -30, 5))
+    Snow <- data.frame(Coverage = rep(0, viewGN), LastSnow = rep(1, viewGN),
+                       MELTING = rep(F, viewGN), SWQ = rep(0, viewGN))
+    Energy <- data.frame(ColdContent = runif(viewGN, 0, 5), TCanopy = rep(0, viewGN),
+                         TSurf = rep(0, viewGN), TSnow = rep(0, viewGN))
 
     SnowFall <- runif(viewGN, 0, 50)
 
@@ -30,11 +30,10 @@ SNOWEnergy <- function(InData, Param, runMode = "RUN", viewGN = 3) {
 
     MetData <- data.frame(ShortWave = runif(viewGN, 1, 2), LongWave = runif(viewGN, 80, 85), TAir = runif(viewGN, -30, 50))
     MetData <- putUnit(MetData, c("W/m2", "W/m2", "Cel"))
-    InData0 <- list(Snow = Snow, Energy = Energy, SnowFall = SnowFall,
-
+    InData0 <- list(Snow = Snow, Energy = Energy, Prec = data.frame(SnowFall = SnowFall),
                     VegData = VegData, MetData = MetData)
     Param00 <- (snow_albedo(runMode = "VIEW"))$Arguments$Param
-    Param0 <- mergeData(Param00, list(gridN = viewGN, TimeStepSec = 3600))
+    Param0 <- mergeData(Param00, list(GridN = viewGN, TimeStepSec = 3600))
     Arguments <- list(InData = InData0, Param = Param0)
 
     if(runMode == "VIEW"){
@@ -53,7 +52,7 @@ SNOWEnergy <- function(InData, Param, runMode = "RUN", viewGN = 3) {
   surf_atten <- InData$VegData$WindAttenuation
 
   Snow <- InData$Snow
-  SnowFall <- InData$SnowFall
+  SnowFall <- InData$Prec$SnowFall
 
   shortwave <- ShortUnderIn <- InData$MetData$ShortWave
 
@@ -63,7 +62,7 @@ SNOWEnergy <- function(InData, Param, runMode = "RUN", viewGN = 3) {
 
   InData$Energy$TAir <- Energy$TAir <- InData$MetData$TAir
   Energy$TCanopy <- (InData$Energy$TCanopy + InData$Energy$TAir) / 2. ##*## lk selbst geschrieben.
-  Energy$TGrnd <- 2. * InData$Energy$TSurf - InData$Energy$TAir ##*## lk selbst geschrieben.
+  Energy$TGrnd <- (InData$Energy$TSurf + InData$Energy$TAir) / 2. ##*## lk selbst geschrieben.
   Energy$OldTSurf <- Energy$TSurf
   Energy$TSurf <- Energy$TGrnd
   Energy$LongSnowIn <- Energy$LongOverIn <- InData$MetData$LongWave

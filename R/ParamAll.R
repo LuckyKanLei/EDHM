@@ -256,6 +256,15 @@
 #'
 #' ###############################################################################
 #' # July average temperature for tree line
-#' TREELINE_TEMPERATURE = 10.0 #
+#' TREELINE_TEMPERATURE = 10.0, #
+#'
+#' ###############################################################################
+#' # options for Snow.VIC
+#' BLOWING_CALC_PROB = TRUE,
+#' BLOWING_FETCH = TRUE,
+#' BLOWING_SIMPLE = TRUE,
+#' BLOWING_SPATIAL_WIND = TRUE,
+#' BLOWING_VAR_THRESHOLD = TRUE,
+#' SPATIAL_SNOW = TRUE
 #' )
-#' use_data(ParamAll)
+#' use_data(ParamAll, overwrite = TRUE)

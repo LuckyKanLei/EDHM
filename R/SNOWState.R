@@ -6,7 +6,6 @@
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
 #' the other parameters depednd on the actuell model, eg. TimeStepSec, gridN.
 #' and use SNOWIntercept(runMode = "VIEW") view the structure
-#' @param Options Optionslist, alle the options for model is TURE seted as default,
 #' and use SNOWState(runMode = "VIEW") view the options structure and set the options
 #' @param runMode mode to run the function, there three mode:
 #' \itemize{
@@ -17,44 +16,46 @@
 #' @param viewGN grid nummer for "VIEW" mode.
 #' @return use SNOWIntercept(runMode = "VIEW") view the outputs and theirs structure
 #' @export
-SNOWState <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
+SNOWState <- function(InData, Param, runMode = "RUN", viewGN = 3) {
   ## "VIEW" and "CHECK" mode ####
   if(runMode == "VIEW" | runMode == "CHECK"){
     fcName <- "SNOWState"
-    Snow <- data.frame(Coverage = runif(viewGN, 0, 1),
+    Snow <- data.frame(Melt = rep(0, viewGN),
+      Coverage = rep(0, viewGN),
                        Density = runif(viewGN, 200, 800),
-                       Depth = runif(viewGN, 0, 10),
+                       Depth = rep(0, viewGN),
                        LastSnow = rep(1, viewGN),
                        MELTING = rep(F, viewGN),
-                       old_swq = runif(viewGN, 0, 20),
-                       store_coverage = runif(viewGN, 0, 1),
-                       store_swq = runif(viewGN, 0, 10),
-                       SurfTemp = runif(viewGN, -20, 10),
-                       SWQ = runif(viewGN, 0, 20))
-    Energy <- data.frame(ColdContent = runif(viewGN, 0, 4), TAir = runif(viewGN, -20, 40))
+                       old_swq = rep(0, viewGN),
+                       store_snow = rep(0, viewGN),
+                       store_coverage = rep(0, viewGN),
+                       store_swq = rep(0, viewGN),
+                       SurfTemp = rep(0, viewGN),
+                       SWQ = rep(0, viewGN))
+    Energy <- data.frame(ColdContent = runif(viewGN, 0, 4), TAir = rep(0, viewGN))
     LandData <- data.frame(MaxSnowDistribSlope = rep(DBL_EPSILON, viewGN))
     SnowFall <- runif(viewGN, 0, 50)
-    Melt <- runif(viewGN, 0, 50)
+    # Melt <- runif(viewGN, 0, 50)
     VaporFlux <- runif(viewGN, 0, 50)
-    JDay <- 1
+    NDay <- 1
     Latitude <- runif(viewGN, 0, 90)
     SDSOut0 <- snow_density(runMode = "VIEW", viewGN = viewGN)
     NSDOut0 <- new_snow_density(runMode = "VIEW")
     InData00 <- (SDSOut0)$Arguments$InData
     InData0 <- mergeData(InData00, list(Energy = Energy,
-                    JDay = JDay,
-                    Melt = Melt,
-                    Latitude = Latitude,
+                    TimeData = data.frame(NDay = NDay),
+                    # Melt = Melt,
+                    GeoData = data.frame(Latitude = Latitude),
                     Snow = Snow,
                     LandData = LandData,
-                    SnowFall = SnowFall,
-                    VaporFlux = VaporFlux))
+                    Prec = list(SnowFall = SnowFall),
+                    Atmos = list(VaporFlux = VaporFlux)))
     Param00 <- mergeData(SDSOut0$Arguments$Param, NSDOut0$Arguments$Param)
     Param0 <- mergeData(Param00, list(TimeStepSec = 3600,
-                                      gridN = viewGN,
-                                      SNOW_TRACESNOW = ParamAll$SNOW_TRACESNOW))
-    Options0 <- list(SPATIAL_SNOW = TRUE)
-    Arguments <- list(InData = InData0, Param = Param0, Options = Options0)
+                                      GridN = viewGN,
+                                      SNOW_TRACESNOW = ParamAll$SNOW_TRACESNOW,
+                                      SPATIAL_SNOW = TRUE))
+    Arguments <- list(InData = InData0, Param = Param0)
 
     if(runMode == "VIEW"){
       vw <- viewArgum(fcName, Arguments)
@@ -69,10 +70,10 @@ SNOWState <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
   ## initialize variable ####
   air_temp <- InData$Energy$TAir
 
-  day_in_year <- InData$JDay
-  snowfall <- InData$SnowFall
-  melt <- InData$Melt
-  VaporFlux <- InData$VaporFlux
+  day_in_year <- InData$TimeData$NDay
+  snowfall <- InData$Prec$SnowFall
+  melt <- InData$Snow$Melt
+  VaporFlux <- InData$Atmos$VaporFlux
 
   old_swq <- InData$Snow$old_swq #### store swq for density calculations ####
   old_coverage <- InData$Snow$Coverage
@@ -83,10 +84,11 @@ SNOWState <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
                      Density = 0,
                      Depth = 0,
                      MELTING = 0,
+                     store_snow = 0,
                      store_coverage = 0,
                      store_swq = 0)
   Snow <- leftjoinData(Snow, InData$Snow)
-  Snow$store_swq <- InData$Snow$SWQ
+  Snow$store_swq <- InData$Snow$SWQ - InData$Snow$old_swq
 
   judgeSWb <- (InData$Snow$SWQ > 0.)
   indexSWb <- which(judgeSWb)
@@ -105,9 +107,9 @@ SNOWState <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
   Snow$Depth[indexSWb] <- (CONST_RHOFW * InData$Snow$SWQ / Snow$Density)[indexSWb]
   #### Record if snowpack is melting this time step ####
   judgeMEt <- (InData$Energy$ColdContent >= 0 & (
-    (InData$Latitude >= 0 & (day_in_year > 60 && #### ~ March 1
+    (InData$GeoData$Latitude >= 0 & (day_in_year > 60 & #### ~ March 1
                                day_in_year < 273)) | #### ~ October 1
-      (InData$Latitude < 0 & (day_in_year < 60 | #### ~ March 1
+      (InData$GeoData$Latitude < 0 & (day_in_year < 60 | #### ~ March 1
                                 day_in_year > 273)) #### ~ October 1
   ))
   judgeME2 <- (Snow$MELTING & (snowfall > Param$SNOW_TRACESNOW))
@@ -116,6 +118,7 @@ SNOWState <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
   #### Check for Thin Snowpack which only Partially Covers Grid Cell exists only if not snowing and snowpack has started to melt ####
   SCOut <- calc_snow_coverage(snowfall,
                               melt / MM_PER_M + VaporFlux,
+                              Snow$store_snow,
                               Snow$store_swq,
                               InData$Snow$SWQ,
                               old_swq,
@@ -124,8 +127,8 @@ SNOWState <- function(InData, Param, Options, runMode = "RUN", viewGN = 3) {
                               Snow$Depth,
                               old_depth,
                               InData$LandData$MaxSnowDistribSlope)
-  Snow$Coverage <- (Options$SPATIAL_SNOW & judgeSWb) *
-    (SCOut$Coverage) + (!Options$SPATIAL_SNOW & judgeSWb)
+  Snow$Coverage <- (Param$SPATIAL_SNOW & judgeSWb) *
+    (SCOut$Coverage) + (!Param$SPATIAL_SNOW & judgeSWb)
   Snow$store_coverage <- SCOut$store_coverage
   Snow$store_swq <- SCOut$store_swq
   delta_coverage <- old_coverage - Snow$Coverage

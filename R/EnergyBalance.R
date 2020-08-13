@@ -11,7 +11,7 @@ SnowPackEnergyBalance <- function(InData, Param) {
   AirDens <- InData$MetData$AirDensity
   EactAir <- InData$MetData$VaporPressure
   Press <- InData$MetData$AirPressure
-  Vpd <- InData$MetData$VaporPressDefficit
+  Vpd <- InData$MetData$VaporPressDeficit
 
   Wind <- InData$Aerodyna$WindSpeedSnow
   Ra <- InData$Aerodyna$AerodynaResistSnow
@@ -30,8 +30,8 @@ SnowPackEnergyBalance <- function(InData, Param) {
   SurfaceLiquidWater <- InData$Snow$SurfWater
 
   SweSurfaceLayer <- InData$SurfaceSnowWater
-  blowing_flux <- InData$Blowing
-  Rain <- InData$RainFall
+  blowing_flux <- InData$Atmos$Blowing
+  Rain <- InData$Prec$RainFall
 
   Dt <- Param$TimeStepSec
 
@@ -39,7 +39,6 @@ SnowPackEnergyBalance <- function(InData, Param) {
   TMean <- TSurf
   waterDensity <- CONST_RHOFW
   Lv <- calc_latent_heat_of_vaporization(Tair)
-
 
   #### Correct aerodynamic conductance for stable conditions
   # Note: If air temp >> snow temp then aero_cond -> 0 (i.e. very stable)
@@ -148,11 +147,11 @@ CanopyEnergyBalance <- function(InData, Param) {
   ref_height <- InData$Aerodyna$ReferHeightCanopy
   roughness <- InData$Aerodyna$RoughCanopy
 
-  VaporMassFlux <- InData$PVegVaporFlux
-  IntSnow <- InData$InterceptSnow
-  IntRain <- InData$InterceptRain
-  Rainfall <- InData$RainFall
-  canopy_evap <- InData$EvapC
+  VaporMassFlux <- InData$Atmos$PVegVaporFlux
+  IntSnow <- InData$Intercept$InterceptSnow
+  IntRain <- InData$Intercept$InterceptRain
+  Rainfall <- InData$Prec$RainFall
+  canopy_evap <- InData$ET$EvaporationCanopy
 
   Tfoliage <- InData$Energy$TFoliage
   Tcanopy <- InData$Energy$TCanopy
@@ -164,7 +163,7 @@ CanopyEnergyBalance <- function(InData, Param) {
   AirDens <- InData$MetData$AirDensity
   EactAir <- InData$MetData$VaporPressure
   Press <- InData$MetData$AirPressure
-  Vpd <- InData$MetData$VaporPressDefficit
+  Vpd <- InData$MetData$VaporPressDeficit
 
   delta_t <- Param$TimeStepSec
 

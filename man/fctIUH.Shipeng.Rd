@@ -4,10 +4,10 @@
 \alias{fctIUH.Shipeng}
 \title{Instantaneous unit hydrograph in ShiPeng}
 \usage{
-\method{fctIUH}{Shipeng}(t, InList)
+\method{fctIUH}{Shipeng}(tt, InList)
 }
 \arguments{
-\item{t}{numrica,time}
+\item{tt}{numrica,time}
 
 \item{InList}{list of Input data}
 }

@@ -64,6 +64,7 @@
 # ##* temperatures ##
 # CONST_TKTRIP <- 273.16 ##*< triple point of fresh water ~ K ##
 # CONST_TKFRZ <- 273.15 ##*< freezing T of fresh water ~ K ##
+# CONST_TKCEL <- 273.15 ##*< The temperature T in degrees Celsius (°C) is equal to the temperature T in Kelvin (K) minus 273.15 ##
 # ##* standard temperature and pressure ##
 # CONST_PSTD <- 101325 ##*< (Pa) standard pressure at 0 m elevation ##
 # CONST_TSTD <- (CONST_TKFRZ + 15.0) ##*< (K) standard temp at 0 m elevation ##
@@ -166,4 +167,3 @@
 #          ParamAll,
 #          internal = T,
 #          overwrite = T)
-

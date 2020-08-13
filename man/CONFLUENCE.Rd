@@ -4,14 +4,12 @@
 \alias{CONFLUENCE}
 \title{caculate route with UH}
 \usage{
-CONFLUENCE(RunoffFlowList, UHAll, ...)
+CONFLUENCE(InData, ...)
 }
 \arguments{
-\item{RunoffFlowList}{list of Inputdata(Runoff)}
+\item{InData}{indata list, use SNOWIntercept(runMode = "VIEW") view the variables and theirs structures}
 
-\item{UHAll}{all of the UH}
-
-\item{...}{other Paramater and inputdata}
+\item{...}{paramlist, in this R packege ParamAll dataset there are alredy most parameters,}
 }
 \value{
 StationFlow Q
