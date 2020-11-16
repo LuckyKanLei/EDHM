@@ -1,0 +1,537 @@
+#' all parameters.
+EDHM.Param <- setClass("EDHM.Param",
+                       slots = c(
+                         LAPSE_RATE = "numeric",
+                         ###############################################################################
+
+                         ###############################################################################
+                         ALBEDO_BARE_SOIL = "numeric",
+
+                         EMISS_GRND = "numeric",
+                         EMISS_VEG = "numeric",
+                         EMISS_ICE = "numeric",
+                         EMISS_SNOW = "numeric",
+                         EMISS_H2O = "numeric",
+                         ###############################################################################
+
+                         ###############################################################################
+                         #	Physical
+                         SOIL_RESID_MOIST = "numeric",
+                         SOIL_SLAB_MOIST_FRACT = "numeric",
+                         #	in
+                         #	assumes
+                         #	the
+
+
+                         VEG_LIQUID_WATER_CAPACITY = "numeric",
+                         VEG_LAI_SNOW_MULTIPLIER = "numeric",
+                         VEG_MIN_INTERCEPTION_STORAGE = "numeric",
+                         VEG_RATIO_DH_HEIGHT = "numeric",
+                         VEG_RATIO_RL_HEIGHT = "numeric",
+                         VEG_LAI_WATER_FACTOR = "numeric",
+
+                         ###############################################################################
+
+                         ###############################################################################
+                         #	Canopy
+                         CANOPY_CLOSURE = "numeric",
+                         CANOPY_RSMAX = "numeric",
+                         CANOPY_VPDMINFACTOR = "numeric",
+                         ###############################################################################
+
+                         ###############################################################################
+                         #	Lake
+
+                         #	lake
+                         LAKE_TMELT = "numeric",
+                         LAKE_MAX_SURFACE = "numeric",
+                         LAKE_BETA = "numeric",
+                         LAKE_FRACMIN = "numeric",
+                         LAKE_FRACLIM = "numeric",
+                         LAKE_DM = "numeric",
+                         LAKE_SNOWCRIT = "numeric",
+                         LAKE_ZWATER = "numeric",
+                         LAKE_ZSNOW = "numeric",
+                         LAKE_RHOSNOW = "numeric",
+                         LAKE_CONDI = "numeric",
+                         LAKE_CONDS = "numeric",
+
+                         #	attenuation
+                         LAKE_LAMISW = "numeric",
+                         LAKE_LAMILW = "numeric",
+
+                         #	attenuation
+                         LAKE_LAMSSW = "numeric",
+                         LAKE_LAMSLW = "numeric",
+
+                         #	attenuation
+                         LAKE_LAMWSW = "numeric",
+                         LAKE_LAMWLW = "numeric",
+                         LAKE_A1 = "numeric",
+                         LAKE_A2 = "numeric",
+                         LAKE_QWTAU = "numeric",
+                         ###############################################################################
+
+                         ###############################################################################
+                         #	Saturated
+                         SVP_A = "numeric",
+                         SVP_B = "numeric",
+                         SVP_C = "numeric",
+                         ###############################################################################
+
+                         ###############################################################################
+                         #	Carbon
+                         CARBON_CATMCURRENT = "numeric",
+                         CARBON_SW2PAR = "numeric",
+                         ###############################################################################
+
+                         ###############################################################################
+                         #	Photosynthesis
+                         PHOTO_OMEGA = "numeric",
+                         PHOTO_LAIMAX = "numeric",
+                         PHOTO_LAILIMIT = "numeric",
+                         #	computation
+                         PHOTO_LAIMIN = "numeric",
+                         PHOTO_EPAR = "numeric",
+                         # = "numeric",
+                         PHOTO_FCMAX = "numeric",
+                         #	(1-FcMax)
+                         PHOTO_FCMIN = "numeric",
+                         #	(1-FcMin)
+                         PHOTO_ZENITHMIN = "numeric",
+                         PHOTO_ZENITHMINPAR = "numeric",
+                         #	photosynthesis
+                         PHOTO_ALBSOIPARMIN = "numeric",
+                         PHOTO_MINMAXETRANS = "numeric",
+                         #	[10e-12
+                         PHOTO_MINSTOMCOND = "numeric",
+
+                         #	Factors
+                         #	concentration
+                         PHOTO_FCI1C3 = "numeric",
+                         PHOTO_FCI1C4 = "numeric",
+
+                         #	C3
+                         #	BIOCHEMICAL
+                         # = "numeric",
+                         PHOTO_OX = "numeric",
+                         PHOTO_KC0 = "numeric",
+                         #	[MOL(CO2)
+                         PHOTO_KO0 = "numeric",
+                         #	[MOL(O2)
+                         PHOTO_EC = "numeric",
+                         PHOTO_EO = "numeric",
+                         PHOTO_EV = "numeric",
+                         PHOTO_ER = "numeric",
+                         PHOTO_ALC3 = "numeric",
+                         PHOTO_FRDC3 = "numeric",
+
+                         #	C4
+                         #	PHOTOSYNTHESIS-STOMATAL
+                         #	PLANT
+                         PHOTO_EK = "numeric",
+                         PHOTO_ALC4 = "numeric",
+                         PHOTO_FRDC4 = "numeric",
+                         PHOTO_THETA = "numeric",
+
+                         #	Plant
+                         PHOTO_FRLEAF = "numeric",
+                         #	maintenance
+                         PHOTO_FRGROWTH = "numeric",
+                         ###############################################################################
+
+                         ###############################################################################
+                         #	Soil
+                         SRESP_E0_LT = "numeric",
+                         SRESP_T0_LT = "numeric",
+                         SRESP_WMINFM = "numeric",
+                         #	respiration
+                         SRESP_WMAXFM = "numeric",
+                         #	respiration
+                         SRESP_WOPTFM = "numeric",
+                         #	respiration
+                         SRESP_RHSAT = "numeric",
+                         #	(w=wmaxFM)
+                         SRESP_RFACTOR = "numeric",
+                         #	sources
+                         SRESP_TAULITTER = "numeric",
+                         SRESP_TAUINTER = "numeric",
+                         SRESP_TAUSLOW = "numeric",
+                         SRESP_FAIR = "numeric",
+                         #	to
+                         SRESP_FINTER = "numeric",
+                         #	to
+                         ###############################################################################
+
+                         ###############################################################################
+                         #	Iteration
+                         SNOW_DT = "numeric",
+                         #	snow
+                         SURF_DT = "numeric",
+                         #	energy
+                         SOIL_DT = "numeric",
+                         #	thermal
+                         CANOPY_DT = "numeric",
+                         #energy	balance
+                         CANOPY_VP = "numeric",
+                         #	moisture
+                         ###############################################################################
+
+                         ###############################################################################
+                         #	Snow
+                         SNOW_MAX_SURFACE_SWE = "numeric",
+                         SNOW_NEW_SNOW_DENSITY = "numeric",
+                         SNOW_DENS_DMLIMIT = "numeric",
+                         SNOW_DENS_MAX_CHANGE = "numeric",
+
+                         #	Constants
+                         SNOW_DENS_ETA0 = "numeric",
+                         #	used
+                         SNOW_DENS_C1 = "numeric",
+                         SNOW_DENS_C2 = "numeric",
+                         SNOW_DENS_C3 = "numeric",
+                         SNOW_DENS_C3_CONST = "numeric",
+                         SNOW_DENS_C4 = "numeric",
+                         SNOW_DENS_C4WET = "numeric",
+                         SNOW_DENS_C5 = "numeric",
+                         #	SNTHRM.89
+                         SNOW_DENS_C6 = "numeric",
+                         #	SNTHRM.89
+                         SNOW_DENS_F = "numeric",
+                         SNOW_DENS_EXP = "numeric",
+                         SNOW_DENS_DENOM = "numeric",
+                         SNOW_NEW_BRAS_DENOM = "numeric",
+
+                         #	Minimum
+                         #	the
+                         SNOW_MIN_SWQ_EB_THRES = "numeric",
+
+                         #	Attenuation
+                         #	taken
+                         SNOW_A1 = "numeric",
+                         SNOW_A2 = "numeric",
+                         SNOW_L1 = "numeric",
+                         SNOW_L2 = "numeric",
+
+                         #	Snow
+                         #	changed
+                         SNOW_NEW_SNOW_ALB = "numeric",
+                         SNOW_ALB_ACCUM_A = "numeric",
+                         SNOW_ALB_ACCUM_B = "numeric",
+                         SNOW_ALB_THAW_A = "numeric",
+                         SNOW_ALB_THAW_B = "numeric",
+
+                         #	Defines
+                         #	albedo
+                         SNOW_TRACESNOW = "numeric",
+                         MIN_SNOW_WETFRAC = "numeric",
+                         #	snow
+                         SNOW_NEW_SNOW_DENS_MAX = "numeric",
+                         SNOW_NEW_SNT_C1 = "numeric",
+                         SNOW_NEW_SNT_C2 = "numeric",
+                         SNOW_NEW_SNT_C3 = "numeric",
+                         #	snow
+                         SNOW_MAX_SNOW_TEMP = "numeric",
+                         SNOW_MIN_RAIN_TEMP = "numeric",
+
+                         SNOW_DENS_DMLIMIT_FACTOR = "numeric",
+                         SNOW_DEPTH_THRES = "numeric",
+                         SNOW_CONDUCT = "numeric",
+                         SNOW_LIQUID_WATER_CAPACITY = "numeric",
+                         HUGE_RESIST = "numeric",
+                         ###############################################################################
+
+                         ###############################################################################
+                         #	Blowing
+                         BLOWING_KA = "numeric",
+                         BLOWING_CSALT = "numeric",
+                         BLOWING_UTHRESH = "numeric",
+                         BLOWING_KIN_VIS = "numeric",
+                         BLOWING_MAX_ITER = "numeric",
+                         BLOWING_K = "numeric",
+                         BLOWING_MACHEPS = "numeric",
+                         BLOWING_SETTLING = "numeric",
+                         BLOWING_NUMINCS = "numeric",
+                         ###############################################################################
+
+                         ###############################################################################
+                         #	July
+                         TREELINE_TEMPERATURE = "numeric",
+
+                         ###############################################################################
+                         #	options
+                         BLOWING_CALC_PROB = "numeric",
+                         BLOWING_FETCH = "numeric",
+                         BLOWING_SIMPLE = "numeric",
+                         BLOWING_SPATIAL_WIND = "numeric",
+                         BLOWING_VAR_THRESHOLD = "numeric",
+                         SPATIAL_SNOW = "numeric"),
+                       prototype =   list(
+  ###############################################################################
+  LAPSE_RATE = -0.0065, # temperature lapse rate in C/m
+  ###############################################################################
+
+  ###############################################################################
+  ALBEDO_BARE_SOIL = 0.2, # albedo for bare soil
+
+  EMISS_GRND = 0.97, # Ground emissivity
+  EMISS_VEG = 0.97, # Veg emissivity
+  EMISS_ICE = 0.97, # Ice emissivity
+  EMISS_SNOW = 0.97, # Snow emissivity
+  EMISS_H2O = 0.98, # Emissivity of open water surface
+  ###############################################################################
+
+  ###############################################################################
+  # Physical Constraints
+  SOIL_RESID_MOIST = 0.0, # define residual moisture content of soil column
+  SOIL_SLAB_MOIST_FRACT = 1.0, # Volumetric moisture content (fraction of porosity)
+  # in the soil/rock below the bottom soil layer; this
+  # assumes that the soil below the bottom layer has
+  # the same texture as the bottom layer.
+
+
+  VEG_LIQUID_WATER_CAPACITY = 0.035, ## water holding capacity of snow as a fraction of snow-water-equivalent
+  VEG_LAI_SNOW_MULTIPLIER = 0.0005, ## multiplier to calculate the amount of available snow interception as a function of LAI (m)
+  VEG_MIN_INTERCEPTION_STORAGE = 0.005, ## the amount of snow on the canopy that can only be melted off. (m)
+  VEG_RATIO_DH_HEIGHT = 0.67, ## Ratio of displacement height (m) to vegetation height (m)
+  VEG_RATIO_RL_HEIGHT = 0.123, ## Ratio of roughness length (m) to vegetation height (m)
+  VEG_LAI_WATER_FACTOR = 0.1, ## Coefficient multiplied by the LAI to determine the amount of water that can be stored in the canopy
+
+  ###############################################################################
+
+  ###############################################################################
+  # Canopy Resistance Parameters
+  CANOPY_CLOSURE = 4000.0, # Threshold vapor pressure deficit for stomatal closure (Pa)
+  CANOPY_RSMAX = 5000.0, # Maximum allowable resistance (s/m)
+  CANOPY_VPDMINFACTOR = 0.1, # Minimum allowable vapor pressure deficit factor
+  ###############################################################################
+
+  ###############################################################################
+  # Lake Model Parameters
+
+  # lake model related constants
+  LAKE_TMELT = 0.0, #
+  LAKE_MAX_SURFACE = 0.6, # max. surface layer thickness for E-B (m)
+  LAKE_BETA = 0.001, # Curve shape parameter for lake profile.
+  LAKE_FRACMIN = 0.10, # min ice thickness in meters
+  LAKE_FRACLIM = 0.02, # lower limit on fractional ice cover
+  LAKE_DM = 1.38889E-07, # molecular diffusivity of water
+  LAKE_SNOWCRIT = 0.05, # for albedo, in m
+  LAKE_ZWATER = 0.0045, # 0.004 - original value
+  LAKE_ZSNOW = 0.005, #
+  LAKE_RHOSNOW = 250.0, # densities snow on ice
+  LAKE_CONDI = 2.3, # thermal conductivity of ice
+  LAKE_CONDS = 0.7, # thermal conductivity of snow
+
+  # attenuation of short and longwave radiation through ice (1/m)
+  LAKE_LAMISW = 1.5, # 1.5 in Patterson & Hamblin
+  LAKE_LAMILW = 20.0, # 20.0 in Patterson & Hamblin
+
+  # attenuation of short and longwave radiation through snow (1/m)
+  LAKE_LAMSSW = 6.0, # 6.0 in Patterson & Hamblin
+  LAKE_LAMSLW = 20.0, # 20.0 in Patterson & Hamblin
+
+  # attenuation of short and longwave radiation through water (1/m)
+  LAKE_LAMWSW = 0.3, # San Fran Bay data: 0.31 - 29.9 1/m (visible)
+  LAKE_LAMWLW = 1.4, # Hostetler and Bartlein assume 0.85 1/m (total)
+  LAKE_A1 = 0.7, # Fraction of radiation in visible band.
+  LAKE_A2 = 0.3, # Fraction of radiation in infrared band.
+  LAKE_QWTAU = 43200.0, # D. Pollard sub-ice time constant. (86400. / 2.)
+  ###############################################################################
+
+  ###############################################################################
+  # Saturated Vapor Pressure Curve Parameters
+  SVP_A = 0.61078, #
+  SVP_B = 17.269, #
+  SVP_C = 237.3, #
+  ###############################################################################
+
+  ###############################################################################
+  # Carbon Cycling constants
+  CARBON_CATMCURRENT = 383.0, # Current global atmospheric CO2 mixing ratio (ppm)
+  CARBON_SW2PAR = 0.45, # Empirical ratio of PAR [W/m2] to SHORTWAVE [W/m2] from Lopez et al., 2001
+  ###############################################################################
+
+  ###############################################################################
+  # Photosynthesis Parameters
+  PHOTO_OMEGA = 0.12, # single leaf scattering albedo
+  PHOTO_LAIMAX = 8.0, # Maximum LAI in nitrogen scaling
+  PHOTO_LAILIMIT = 3.0, # Minimum LAI in nitrogen scaling and maximum LAI in PAR
+  # computation
+  PHOTO_LAIMIN = 1.0e-9, # Minimum LAI in PAR computation
+  PHOTO_EPAR = 2.2e5, # Energy content of PAR [J/mol photons]
+  # = (4.6 mol/MJ PAR)^-1, #
+  PHOTO_FCMAX = 0.9, # Maximum fractional veg cover
+  # (1-FcMax) = min amount of ground visible
+  PHOTO_FCMIN = 1.0e-3, # Minimum fractional veg cover
+  # (1-FcMin) = max amount of ground visible
+  PHOTO_ZENITHMIN = 0.0174524, # Check for solar zenith angle > 89 deg
+  PHOTO_ZENITHMINPAR = 1.0e-3, # Cosine of the minimum solar zenith angle for
+  # photosynthesis to take place
+  PHOTO_ALBSOIPARMIN = 0.0, # Minimum soil reflectivity in PAR range
+  PHOTO_MINMAXETRANS = 1e-12, # Minimum of maximum electron transport rate
+  # [10e-12 mol/(m^2 s)]
+  PHOTO_MINSTOMCOND = 0.0, # Minimum stomatal conductance [mol H2O/m2s]
+
+  # Factors that relate leaf internal CO2 concentration to ambient CO2, #
+  # concentration
+  PHOTO_FCI1C3 = 0.87, # C3 Plants
+  PHOTO_FCI1C4 = 0.67, # C4 Plants
+
+  # C3 PLANTS: FARQUHAR, G.D., S. VON CAEMMERER AND J.A. BERRY, = 1980. A
+  # BIOCHEMICAL MODEL OF PHOTOYNTHESIS IN LEAVES OF C3 SPECIES. PLANTA = 149,
+  # = 78-90.
+  PHOTO_OX = 0.21, # OXYGEN CONCENTRATION [MOL(O2) / MOL(AIR)]
+  PHOTO_KC0 = 460.0e-6, # MICHAELIS-MENTEN CONSTANT FOR CO2 AT 25C
+  #  [MOL(CO2) / MOL(AIR)]
+  PHOTO_KO0 = 330.0e-3, # MICHAELIS-MENTEN CONSTANT FOR O2 AT 25C
+  # [MOL(O2) / MOL(AIR)]
+  PHOTO_EC = 59356.0, # ACTIVATION ENERGY FOR KC [J / MOL]
+  PHOTO_EO = 35948.0, # ACTIVATION ENERGY FOR KO [J / MOL]
+  PHOTO_EV = 58520.0, # ACTIVATION ENERGY FOR VCMAX [J / MOL]
+  PHOTO_ER = 45000.0, # ACTIVATION ENERGY FOR DARK RESPIRATION [J / MOL]
+  PHOTO_ALC3 = 0.28, # EFFICIENCY OF OF PHOTON CAPTURE
+  PHOTO_FRDC3 = 0.011, # RATIO OF DARK RESPIRATION TO "PVM" AT 25C for C3
+
+  # C4 PLANTS: COLLATZ, G.J., M. RIBAS-CARBO AND J.A. BERRY, = 1992.  COUPLED
+  # PHOTOSYNTHESIS-STOMATAL CONDUCTANCE MODEL FOR LEAVES OF C4 PLANTS. AUST. J.
+  # PLANT PHYSIOL. = 19, 519-538.
+  PHOTO_EK = 50967.0, # Q10=2 (Collatz et al. 1992)
+  PHOTO_ALC4 = 0.04, # EFFECTIVE QUANTUM EFFICIENCY
+  PHOTO_FRDC4 = 0.042, # RATIO OF DARK RESPIRATION TO "PVM" AT 25C for C4
+  PHOTO_THETA = 0.83, # CURVATURE PARAMETER
+
+  # Plant Maintenance and Growth Respiration Parameters
+  PHOTO_FRLEAF = 0.4, # Ratio of canopy leaf respiration to whole plant
+  # maintenance respiration
+  PHOTO_FRGROWTH = 0.25, # Ratio of plant growth respiration to NPP
+  ###############################################################################
+
+  ###############################################################################
+  # Soil Respiration Parameters
+  SRESP_E0_LT = 308.56, # Lloyd-Taylor E0 parameter [K]
+  SRESP_T0_LT = 227.13, # Lloyd-Taylor T0 parameter [K]
+  SRESP_WMINFM = 0.0, # minimum soil moisture (fraction) at which soil
+  # respiration can occur
+  SRESP_WMAXFM = 1.0, # maximum soil moisture (fraction) at which soil
+  # respiration can occur
+  SRESP_WOPTFM = 0.5, # soil moisture (fraction) at which maximum soil
+  # respiration occurs
+  SRESP_RHSAT = 0.15, # ratio of soil respiration rate under saturated conditions
+  # (w=wmaxFM) to that under optimal conditions (w=woptFM)
+  SRESP_RFACTOR = 0.5, # scaling factor to account for other (non-moisture)
+  # sources of inhibition of respiration
+  SRESP_TAULITTER = 2.86, # Litter pool turnover time [y]
+  SRESP_TAUINTER = 33.3, # Intermediate pool turnover time [y]
+  SRESP_TAUSLOW = 1000.0, # Slow pool turnover time [y]
+  SRESP_FAIR = 0.7, # Fraction of respired carbon from litter pool that is lost
+  # to atmosphere
+  SRESP_FINTER = 0.985, # Fraction of [respired carbon from litter pool that goes
+  # to soil] that goes to intermediate pool
+  ###############################################################################
+
+  ###############################################################################
+  # Iteration bracket widths
+  SNOW_DT = 15.0, # Used to bracket snow surface temperatures while computing the
+  # snow surface energy balance (C)
+  SURF_DT = 1.0, # Used to bracket soil surface temperatures while computing
+  # energy balance (C)
+  SOIL_DT = 0.25, # Used to bracket soil temperatures while solving the soil
+  # thermal flux (C)
+  CANOPY_DT = 1.0, # Used to bracket canopy air temperatures while computing
+  #energy balance (C)
+  CANOPY_VP = 25.0, # Used to bracket canopy vapor pressures while computing
+  # moisture balance (Pa)
+  ###############################################################################
+
+  ###############################################################################
+  # Snow Parameters
+  SNOW_MAX_SURFACE_SWE = 0.125, ## maximum depth of the surface layer in water equivalent (m) [default = 0.125]
+  SNOW_NEW_SNOW_DENSITY = 50.0, ## density of new fallen snow [50]
+  SNOW_DENS_DMLIMIT = 100.0, ## Density limit used in calculation of destructive metamorphism (kg/m^3)
+  SNOW_DENS_MAX_CHANGE = 0.9, ## maximum change in snowfall depth (fraction of swe)
+
+  # Constants in snow density computation
+  SNOW_DENS_ETA0 = 3.6e6, # viscosity of snow at T=0C and density = 0
+  # used in calculation of true viscosity (Ns/m2)
+  SNOW_DENS_C1 = 0.04, #
+  SNOW_DENS_C2 = 2.778e-6, #
+  SNOW_DENS_C3 = 1.,  ## Constant in snow density computation
+  SNOW_DENS_C3_CONST = -0.046,  ## Constant in snow density computation
+  SNOW_DENS_C4 = 1.,   ## Constant in snow density computation
+  SNOW_DENS_C4WET = 2.,   ## Constant in snow density computation
+  SNOW_DENS_C5 = 0.08, # constant used in snow viscosity calculation, taken from
+  # SNTHRM.89 (/C)
+  SNOW_DENS_C6 = 0.021, # constant used in snow viscosity calculation, taken from
+  # SNTHRM.89 (kg/m3)
+  SNOW_DENS_F = 0.6, # internal compaction rate coefficient
+  SNOW_DENS_EXP = 0.35, ## exponent in snow density compaction equation [Bras pg. 257 ]
+  SNOW_DENS_DENOM = 10, ## denomenator in snow density compaction equation [Bras pg. 257]
+  SNOW_NEW_BRAS_DENOM = 100, ## Constant in Bras new snow density computation.
+
+  # Minimum SWQ for which the snowpack energy balance is computed independent of
+  # the soil surface temperature
+  SNOW_MIN_SWQ_EB_THRES = 0.0010, #
+
+  # Attenuation coefficients for shortwave in a snowpack.  Values and equation
+  # taken from Patterson and Hamblin, = 1988, #
+  SNOW_A1 = 0.7, #
+  SNOW_A2 = 0.3, #
+  SNOW_L1 = 6.0, # (1/m)
+  SNOW_L2 = 20.0, # (1/m)
+
+  # Snow albedo curve parameters.  Defaults are from Bras p263. Should not be
+  # changed except for serious problems with snow melt
+  SNOW_NEW_SNOW_ALB = 0.85, #
+  SNOW_ALB_ACCUM_A = 0.94, #
+  SNOW_ALB_ACCUM_B = 0.58, #
+  SNOW_ALB_THAW_A = 0.82, #
+  SNOW_ALB_THAW_B = 0.46, #
+
+  # Defines the minimum amount of new snow (mm) which will reset the snowpack
+  # albedo to new snow
+  SNOW_TRACESNOW = 0.03, #
+  MIN_SNOW_WETFRAC = 0.01,  # Minimum fraction of snow depth to be considered wet.
+  # snow density max for Hedstrom and Pomeroy 1998 equation
+  SNOW_NEW_SNOW_DENS_MAX = 400.0, ## kg/m3
+  SNOW_NEW_SNT_C1 = 67.92,  ## Constant in Sntherm new snow density computation.
+  SNOW_NEW_SNT_C2 = 51.25,  ## Constant in Sntherm new snow density computation.
+  SNOW_NEW_SNT_C3 = 2.59,  ## Constant in Sntherm new snow density computation.
+  # snow temperature
+  SNOW_MAX_SNOW_TEMP = 0.5,  ## maximum temperature (C) at which snow can fall
+  SNOW_MIN_RAIN_TEMP = -0.5,  ## minimum temperature (C) at which rain can fall
+
+  SNOW_DENS_DMLIMIT_FACTOR = 1.15, ## Density limit factor used in calculation of destructive metamorphism (kg/m^3)
+  SNOW_DEPTH_THRES = 1.e-8, ## Snow depth threshold below which we do not consider the ground flux out of the snowpack in calculating change in cold content (m)
+  SNOW_CONDUCT = 2.9302e-6, ## conductivity of snow (W/mK)
+  SNOW_LIQUID_WATER_CAPACITY = 0.035, ## water holding capacity of snow as a fraction of snow-water-equivalent
+  HUGE_RESIST = 1e20, ## Extermely large resistance term (s/m)
+  ###############################################################################
+
+  ###############################################################################
+  # Blowing Snow Parameters
+  BLOWING_KA = 0.0245187, # thermal conductivity of air (W/mK)
+  BLOWING_CSALT = 0.68, # saltation constant m/s
+  BLOWING_UTHRESH = 0.25, # threshold shear velocity m/s
+  BLOWING_KIN_VIS = 1.3e-5, # Kinemativ viscosity of air (m2/s)
+  BLOWING_MAX_ITER = 100, # Max. iterations for numerical integration
+  BLOWING_K = 5, #
+  BLOWING_MACHEPS = 1.0e-6, # Accuracy tolerance for numerical integration
+  BLOWING_SETTLING = 0.3, # Particle settling velocity m/s
+  BLOWING_NUMINCS = 10, # Number of prob intervals to solve for wind.
+  ###############################################################################
+
+  ###############################################################################
+  # July average temperature for tree line
+  TREELINE_TEMPERATURE = 10.0, #
+
+  ###############################################################################
+  # options for Snow.VIC
+  BLOWING_CALC_PROB = 1,
+  BLOWING_FETCH = 1,
+  BLOWING_SIMPLE = 1,
+  BLOWING_SPATIAL_WIND = 1,
+  BLOWING_VAR_THRESHOLD = 1,
+  SPATIAL_SNOW = 1
+)
+)
