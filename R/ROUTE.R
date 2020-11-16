@@ -162,48 +162,50 @@ fctGrid2AimGridFind <- function(l,m, AimGridID, GridID, FlowDirection){
   k = m
   while(!is.na(GridID[j,k])){
     f = FlowDirection[j,k]
-    if(f == 1) {
+    if(f == 64) {
       j = j-1
       k = k
       n = n+1
     }
-    if(f==2) {
+    else if(f == 128) {
       j = j-1
       k = k+1
       n = n+1.42
     }
-    if(f == 3) {
+    else if(f == 1) {
       k = k+1
       j = j
       n = n+1
     }
-    if(f == 4) {
+    else if(f == 2) {
       j = j+1
       k = k+1
       n = n+1.42
     }
-    if(f == 5) {
+    else if(f == 4) {
       j = j+1
       k = k
-      n = n+1
-    }
-    if(f == 6) {
-      j = j+1
-      k = k-1
-      n = n+1.42
-    }
-    if(f == 7) {
-      k = k-1
-      j = j
       n = n+1
     }
     if(f == 8) {
+      j = j+1
+      k = k-1
+      n = n+1.42
+    }
+    else if(f == 16) {
+      k = k-1
+      j = j
+      n = n+1
+    }
+    else if(f == 32) {
       j = j-1
       k = k-1
       n = n+1.42
     }
-    j = j
-    k = k
+    else {
+      j = j
+      k = k
+    }
     if(GridID[j,k] %in% as.matrix(AimGridID))  break
   }
 

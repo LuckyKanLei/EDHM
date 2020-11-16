@@ -41,10 +41,10 @@ calc_rainonly <- function(air_temp,
 PRECDivid <- function(InData, Param, runMode = "RUN", viewGN = 3) {
   if(runMode == "VIEW" | runMode == "CHECK"){
     fcName <- "PRECDivid"
-    MetData <- data.frame(Precipitation = runif(viewGN, 0, 90), TAir = runif(viewGN, -30, 50))
+    MetData <- data.frame(TAir = runif(viewGN, -30, 50))
     MetData <- putUnit(MetData, c("mm", "Cel"))
 
-    InData0 <- list(MetData = MetData)
+    InData0 <- list(MetData = MetData, Prec = data.frame(Precipitation = runif(viewGN, 0, 90)))
     Param0 <- list(SNOW_MAX_SNOW_TEMP = ParamAll$SNOW_MAX_SNOW_TEMP, SNOW_MIN_RAIN_TEMP = ParamAll$SNOW_MIN_RAIN_TEMP)
     Arguments <- list(InData = InData0, Param = Param0)
 
@@ -56,8 +56,8 @@ PRECDivid <- function(InData, Param, runMode = "RUN", viewGN = 3) {
       return()
     }
   }
+  prec <- InData$Prec$Precipitation
 
-  prec <- InData$MetData$Precipitation
   air_temp <- InData$MetData$TAir
   MAX_SNOW_TEMP <- Param$SNOW_MAX_SNOW_TEMP
   MIN_RAIN_TEMP <- Param$SNOW_MIN_RAIN_TEMP

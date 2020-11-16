@@ -86,6 +86,8 @@
 # CONST_LATVAP <- 2.50E+06 ##*< latent heat of evaporation ~ J/kg ##
 # CONST_LATSUB <- (CONST_LATICE + CONST_LATVAP) ##*< latent heat of sublimation ~ J/kg ##
 #
+# ## atmosphere ##
+# CONST_Gas_R <- 287 ## J/kg/K
 # ##*< special values ##
 # CONST_SPVAL <- 1.00E+30
 # DBL_EPSILON <- 0.000000000001
@@ -164,6 +166,7 @@
 #          CONST_SPVAL,
 #          DBL_EPSILON,
 #          MISSING,
+#          CONST_Gas_R,
 #          ParamAll,
 #          internal = T,
 #          overwrite = T)

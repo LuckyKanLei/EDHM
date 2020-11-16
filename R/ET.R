@@ -12,9 +12,9 @@ ReferenceET <- function(InData, ...) UseMethod("ReferenceET", InData)
 #' \item JDay, date
 #' \item Elevation, m
 #' \item Latitude
-#' \item Tmax, oC, Celius
-#' \item Tmin, oC, Celius
-#' \item Tmean, oC, Celius
+#' \item TMax, oC, Celius
+#' \item TMin, oC, Celius
+#' \item TAir, oC, Celius
 #' \item Wind, speed, m/s
 #' \item WindH, hoch, speed messeur
 #' \item SunHour,
@@ -33,19 +33,53 @@ ReferenceET <- function(InData, ...) UseMethod("ReferenceET", InData)
 #' @export ReferenceET.PenmanMonteith
 #' @export
 ReferenceET.PenmanMonteith <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
+  ## "VIEW" and "CHECK" mode ####
+  if(runMode == "VIEW" | runMode == "CHECK"){
+    fcName <- "ReferenceET.PenmanMonteith"
+    MetData <- list(TMax = runif(viewGN, 0.1, 1),
+                    TMin = runif(viewGN, 0.1, 1),
+                    TAir = runif(viewGN, 0.1, 1),
+                    WindSpeed = runif(viewGN, 0.1, 1),
+                    WindH = runif(viewGN, 0.1, 1),
+                    SunHour = runif(viewGN, 0.1, 1),
+                    RelativeHumidity = runif(viewGN, 0.1, 1))
+    MetData <- putUnit(MetData, c("Cel", "Cel", "Cel", "m/s", "m", "h", "100%"))
+    GeoData <- list(Elevation = runif(viewGN, 0.1, 1),
+                    Latitude = runif(viewGN, 0.1, 1))
+
+    InData0 <- list(MetData = MetData,
+                    GeoData = GeoData,
+                    TimeData = list(NDay = 1:viewGN))
+    Param0 <- list(TimeStepSec = 3600,
+                   GridN = viewGN)
+    Arguments <- list(InData = InData0, Param = Param0)
+    if(runMode == "VIEW"){
+      vw <- viewArgum(fcName, Arguments)
+      return(list(Arguments = Arguments, Out = vw))
+    } else {
+      ck <- checkData(Arguments, list(InData = InData, Param = Param), "Arguments")
+      return()
+    }
+  }
+
+
   JDay <- InData$TimeData$NDay
+
   Elevation <- InData$GeoData$Elevation
   Latitude <- InData$GeoData$Latitude
-  Tmax <- InData$MetData$Tmax
-  Tmin <- InData$MetData$Tmin
-  Tmean <- InData$MetData$Tmean
+
+  TMax <- InData$MetData$TMax
+  TMin <- InData$MetData$TMin
+  Tmean <- InData$MetData$TAir
   WindSpeed <- InData$MetData$WindSpeed
   WindH <- InData$MetData$WindH
   SunHour <- InData$MetData$SunHour
   RelativeHumidity <- InData$MetData$RelativeHumidity
   dimV <- dim(Tmean)
+
   timN <- Param$PeriodN
   gridN <- Param$GridN
+
   JDay <- matrix(rep(JDay,gridN), timN, gridN)
   Elevation <- matrix(rep(Elevation,timN), timN, gridN, byrow = T)
   Latitude <- matrix(rep(Latitude,timN), timN, gridN, byrow = T)
@@ -60,9 +94,9 @@ ReferenceET.PenmanMonteith <- function(InData, Param, runMode = "RUN", viewGN = 
   ETemperature <- function(Temperature){
     return(0.6108 * exp(17.27 * Temperature / (Temperature + 237.3)))
   }  #Equation 15
-  SaturationVaporPressure <- (ETemperature(Tmax) + ETemperature(Tmin)) / 2  #Equation 18
-  # ActualVaporPressure = (ETemperature(Tmin) * MaximumRelativeHumidity / 100 + ETemperature(Tmax) * MinimumRelativeHumidity / 100) /2  #Equation 19
-  ActualVaporPressure <- RelativeHumidity / 100.0 * (ETemperature(Tmax) + ETemperature(Tmin)) / 2
+  SaturationVaporPressure <- (ETemperature(TMax) + ETemperature(TMin)) / 2  #Equation 18
+  # ActualVaporPressure = (ETemperature(TMin) * MaximumRelativeHumidity / 100 + ETemperature(TMax) * MinimumRelativeHumidity / 100) /2  #Equation 19
+  ActualVaporPressure <- RelativeHumidity / 100.0 * (ETemperature(TMax) + ETemperature(TMin)) / 2
   EarthSun <- 1 + 0.033 * cos(2 * pi * JDay / 365.25)  #Equation 23
   SolarDeclination <- 0.409 * sin(2* pi *JDay / 365.25 - 1.39)  #Equation 24
   LatitudeRad <- pi * Latitude / 180 #Equation 25
@@ -75,7 +109,7 @@ ReferenceET.PenmanMonteith <- function(InData, Param, runMode = "RUN", viewGN = 
                                                           0.028  * (77.6667 / 100) -
                                                           0.11533* (EarthSun / PossibleSunshineHours) * (77.6667 / 100)) ### in zhaona: Solar radiation estimation using sunshine hour and air pollution index in China
   NetShortwaveRadiation <- (1 - 0.23) * DailySolarRadiationMJ  #Equation 29  ##α = albedo or canopy reflection coefficient, which is 0.23 for the hypothetical grass reference crop, dimensionless
-  NetOutgoingLongwaveRadiation <- 4.903*10^-9 * (((Tmax + 273.16)^4 + (Tmax + 273.16)^4) / 2) *
+  NetOutgoingLongwaveRadiation <- 4.903*10^-9 * (((TMax + 273.16)^4 + (TMax + 273.16)^4) / 2) *
     (0.34 - 0.14 * ActualVaporPressure^0.5) * (1.35 * DailySolarRadiationMJ / ClearSkySolarRadiation - 0.35)  #Equation 30  ##σ = Stefan-Boltzmann constant [4.903 10-9 MJ K-4 m-2 day-1],
   NetRadiation <- NetShortwaveRadiation - NetOutgoingLongwaveRadiation  #Equation 31
   EquivalentNetRadiation <- 0.408 * NetRadiation  #Equation 32
@@ -88,13 +122,13 @@ ReferenceET.PenmanMonteith <- function(InData, Param, runMode = "RUN", viewGN = 
 
 #' ReferenceET with Hargreaves methond
 #' @references  Hargreaves G H, Samani Z A. Reference crop evapotranspiration from ambient air temperature[J]. American Society of Agricultural Engineers, 1985(1):1-12.
-#' @param InData list of: JDay, Latitude, Tmax, Tmin, Tmean
+#' @param InData list of: JDay, Latitude, TMax, TMin, Tmean
 #' \itemize{
 #' \item JDay, date
 #' \item Latitude
-#' \item Tmax, oC, Celius
-#' \item Tmin, oC, Celius
-#' \item Tmean, oC, Celius
+#' \item TMax, oC, Celius
+#' \item TMin, oC, Celius
+#' \item TAir, oC, Celius
 #' }
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
 #' @param runMode mode to run the function, there three mode:
@@ -109,11 +143,34 @@ ReferenceET.PenmanMonteith <- function(InData, Param, runMode = "RUN", viewGN = 
 #' @export ReferenceET.Hargreaves
 #' @export
 ReferenceET.Hargreaves <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
+  if(runMode == "VIEW" | runMode == "CHECK"){
+    fcName <- "ReferenceET.Hargreaves"
+    MetData <- list(TMax = runif(viewGN, 0.1, 1),
+                    TMin = runif(viewGN, 0.1, 1),
+                    TAir = runif(viewGN, 0.1, 1))
+    MetData <- putUnit(MetData, c("Cel", "Cel", "Cel"))
+    GeoData <- list(Latitude = runif(viewGN, 0.1, 1))
+
+    InData0 <- list(MetData = MetData,
+                    GeoData = GeoData,
+                    TimeData = list(NDay = 1:viewGN))
+    Param0 <- list(TimeStepSec = 3600,
+                   GridN = viewGN)
+    Arguments <- list(InData = InData0, Param = Param0)
+    if(runMode == "VIEW"){
+      vw <- viewArgum(fcName, Arguments)
+      return(list(Arguments = Arguments, Out = vw))
+    } else {
+      ck <- checkData(Arguments, list(InData = InData, Param = Param), "Arguments")
+      return()
+    }
+  }
+
   JDay <- InData$TimeData$NDay
   Latitude <- InData$GeoData$Latitude
-  Tmax <- InData$MetData$Tmax
-  Tmin <- InData$MetData$Tmin
-  Tmean <- InData$MetData$Tmean
+  TMax <- InData$MetData$TMax
+  TMin <- InData$MetData$TMin
+  Tmean <- InData$MetData$TAir
 
   EarthSun <- 1 + 0.033 * cos(2 * pi * JDay / 365.25)  #Equation 23
   SolarDeclination <- 0.409 * sin(2* pi *JDay / 365.25 - 1.39)  #Equation 24
@@ -123,7 +180,7 @@ ReferenceET.Hargreaves <- function(InData, Param, runMode = "RUN", viewGN = 3, .
     (SunsetHourAngle * sin(LatitudeRad) * sin(SolarDeclination) +
        cos(LatitudeRad) * cos(SolarDeclination) * sin(SunsetHourAngle))  #Equation 27 ##Gsc = solar constant = 0.0820 MJ m-2 min-1;
   ExtraterrestrialRadiationMM <- ExtraterrestrialRadiation / 2.45  #B.25 ##(Ra in mm d-1 = Ra in MJ m-2 d-1 / 2.45).
-  RET <- 0.0023 * (Tmax - Tmin)^0.5 * (Tmean + 17.8) * ExtraterrestrialRadiationMM
+  RET <- 0.0023 * (TMax - TMin)^0.5 * (Tmean + 17.8) * ExtraterrestrialRadiationMM
   return(list(ET = data.frame(RET = RET)))
 }
 
