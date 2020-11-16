@@ -5,7 +5,34 @@
 #' @export
 ReferenceET <- function(InData, ...) UseMethod("ReferenceET", InData)
 
-#' ReferenceET with PenmanMonteith methond
+#' @title PmMt s4 class
+#' @importFrom methods new
+#' @export PmMt
+PmMt <- setClass("PmMt", contains = "HM.Data")
+MetPmMt <- setClass("MetPmMt",
+                    slots = c(TAir = "array",
+                              TMax = "array",
+                              TMin = "array",
+                              RelativeHumidity = "array",
+                              WindSpeed = "array",
+                              WindH = "array",
+                              SunHour = "array"))
+GeoPmMt <- setClass("GeoPmMt",
+                    slots = c(Latitude = "array",
+                              Elevation = "array"))
+TimePmMt <- setClass("TimePmMt",
+                     slots = c(NDay = "array"))
+InPmMt <- setClass("InPmMt",
+                   slots = c(MetData = "MetPmMt",
+                             GeoData = "GeoPmMt",
+                             TimeData = "TimePmMt"),
+                   contains = "PmMt")
+EvatransPmMt <- setClass("EvatransPmMt",
+                         slots = c(RET = "array"))
+OutPmMt <- setClass("OutPmMt",
+                    slots = c(Evatrans = "EvatransPmMt"),
+                    contains = "HM.Data")
+#' ReferenceET with PmMt methond
 #' @references  Pengman H L. Estimating evaporation[J]. American Geophysical Union, 1956(1):43-50.
 #' @param InData list of:
 #' \itemize{
@@ -29,56 +56,35 @@ ReferenceET <- function(InData, ...) UseMethod("ReferenceET", InData)
 #' }
 #' @param viewGN grid nummer for "VIEW" mode.
 #' @param ... other Parmeters
-#' @return Reference ET with PenmanMonteith methond
-#' @export ReferenceET.PenmanMonteith
+#' @return Reference ET with PmMt methond
+#' @export ReferenceET.PmMt
 #' @export
-ReferenceET.PenmanMonteith <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
+ReferenceET.PmMt <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
   ## "VIEW" and "CHECK" mode ####
-  if(runMode == "VIEW" | runMode == "CHECK"){
-    fcName <- "ReferenceET.PenmanMonteith"
-    MetData <- list(TMax = runif(viewGN, 0.1, 1),
-                    TMin = runif(viewGN, 0.1, 1),
-                    TAir = runif(viewGN, 0.1, 1),
-                    WindSpeed = runif(viewGN, 0.1, 1),
-                    WindH = runif(viewGN, 0.1, 1),
-                    SunHour = runif(viewGN, 0.1, 1),
-                    RelativeHumidity = runif(viewGN, 0.1, 1))
-    MetData <- putUnit(MetData, c("Cel", "Cel", "Cel", "m/s", "m", "h", "100%"))
-    GeoData <- list(Elevation = runif(viewGN, 0.1, 1),
-                    Latitude = runif(viewGN, 0.1, 1))
-
-    InData0 <- list(MetData = MetData,
-                    GeoData = GeoData,
-                    TimeData = list(NDay = 1:viewGN))
+  if(runMode == "CHECK"){
     Param0 <- list(TimeStepSec = 3600,
                    GridN = viewGN)
-    Arguments <- list(InData = InData0, Param = Param0)
-    if(runMode == "VIEW"){
-      vw <- viewArgum(fcName, Arguments)
-      return(list(Arguments = Arguments, Out = vw))
-    } else {
-      ck <- checkData(Arguments, list(InData = InData, Param = Param), "Arguments")
-      return()
-    }
+    ck <- checkData(Arguments, list(InData = InData, Param = Param), "Arguments")
+
   }
 
 
-  JDay <- InData$TimeData$NDay
+  JDay <- InData@TimeData@NDay
 
-  Elevation <- InData$GeoData$Elevation
-  Latitude <- InData$GeoData$Latitude
+  Elevation <- InData@GeoData@Elevation
+  Latitude <- InData@GeoData@Latitude
 
-  TMax <- InData$MetData$TMax
-  TMin <- InData$MetData$TMin
-  Tmean <- InData$MetData$TAir
-  WindSpeed <- InData$MetData$WindSpeed
-  WindH <- InData$MetData$WindH
-  SunHour <- InData$MetData$SunHour
-  RelativeHumidity <- InData$MetData$RelativeHumidity
+  TMax <- InData@MetData@TMax
+  TMin <- InData@MetData@TMin
+  Tmean <- InData@MetData@TAir
+  WindSpeed <- InData@MetData@WindSpeed
+  WindH <- InData@MetData@WindH
+  SunHour <- InData@MetData@SunHour
+  RelativeHumidity <- InData@MetData@RelativeHumidity
   dimV <- dim(Tmean)
 
-  timN <- Param$PeriodN
-  gridN <- Param$GridN
+  timN <- Param@PeriodN
+  gridN <- Param@GridN
 
   JDay <- matrix(rep(JDay,gridN), timN, gridN)
   Elevation <- matrix(rep(Elevation,timN), timN, gridN, byrow = T)
@@ -87,7 +93,11 @@ ReferenceET.PenmanMonteith <- function(InData, Param, runMode = "RUN", viewGN = 
   Wind2 <- WindSpeed * 4.87 / log(67.8 * WindH - 5.42)  #Equation 7
   Delt <- 4098 * (0.6108 * exp(17.27 * Tmean / (Tmean + 237.3))) / (Tmean + 237.3)^2  #Equation 9
   Pressure <- 101.3 * ((293 - 0.0065 * Elevation) / 293)^5.26  #Equation 10
-  Gama <- 0.000665 * Pressure  #Equation 11  ##γ = psychrometric constant, kPa °C-1;P = atmospheric pressure, kPa, [Eq. 10];λ = latent heat of vaporization, 2.45, MJ kg-1;cp = specific heat at constant pressure, 1.013 10-3, MJ kg-1°C-1;μ = ratio molecular weight of water vapour/dry air = 0.622.
+  Gama <- 0.000665 * Pressure  #Equation 11  ##γ = psychrometric constant, kPa °C-1;
+  # P = atmospheric pressure, kPa, [Eq. 10];
+  # λ = latent heat of vaporization, 2.45, MJ kg-1;
+  # cp = specific heat at constant pressure, 1.013 10-3, MJ kg-1°C-1;
+  # μ = ratio molecular weight of water vapour/dry air = 0.622.
   DeltTerm <- Delt / (Delt + Gama * (1 + 0.34 * Wind2))  #Equation 12
   PressureTerm <- Gama / (Delt + Gama * (1 + 0.34 * Wind2))  #Equation 13
   TemperatureTerm <- (900 / (Tmean + 273)) * Wind2  #Equation 14
@@ -116,9 +126,34 @@ ReferenceET.PenmanMonteith <- function(InData, Param, runMode = "RUN", viewGN = 
   ETRadiation <- DeltTerm * EquivalentNetRadiation #Equation 33
   ETWind <- PressureTerm * TemperatureTerm * (SaturationVaporPressure - ActualVaporPressure)  #Equation 34
   RET <- ETRadiation + ETWind  #Equation 35
-  return(list(ET = list(RET = RET)))
+  Out <- OutPmMt()
+  Out@Evatrans@RET <- RET
+  return(Out)
 }
 
+#' @title Hargreaves s4 class
+#' @importFrom methods new
+#' @export Hargreaves
+Hargreaves <- setClass("Hargreaves", contains = "HM.Data")
+
+MetHargreaves <- setClass("MetHargreaves",
+                          slots = c(TAir = "array",
+                                    TMax = "array",
+                                    TMin = "array"))
+GeoHargreaves <- setClass("GeoHargreaves",
+                          slots = c(Latitude = "array"))
+TimeHargreaves <- setClass("TimeHargreaves",
+                           slots = c(NDay = "array"))
+InHargreaves <- setClass("InHargreaves",
+                         slots = c(MetData = "MetHargreaves",
+                                   GeoData = "GeoHargreaves",
+                                   TimeData = "TimeHargreaves"),
+                         contains = "Hargreaves")
+EvatransHargreaves <- setClass("EvatransHargreaves",
+                               slots = c(RET = "array"))
+OutHargreaves <- setClass("OutHargreaves",
+                          slots = c(Evatrans = "EvatransHargreaves"),
+                          contains = "HM.Data")
 
 #' ReferenceET with Hargreaves methond
 #' @references  Hargreaves G H, Samani Z A. Reference crop evapotranspiration from ambient air temperature[J]. American Society of Agricultural Engineers, 1985(1):1-12.
@@ -144,34 +179,22 @@ ReferenceET.PenmanMonteith <- function(InData, Param, runMode = "RUN", viewGN = 
 #' @export
 ReferenceET.Hargreaves <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
   if(runMode == "VIEW" | runMode == "CHECK"){
-    fcName <- "ReferenceET.Hargreaves"
-    MetData <- list(TMax = runif(viewGN, 0.1, 1),
-                    TMin = runif(viewGN, 0.1, 1),
-                    TAir = runif(viewGN, 0.1, 1))
-    MetData <- putUnit(MetData, c("Cel", "Cel", "Cel"))
-    GeoData <- list(Latitude = runif(viewGN, 0.1, 1))
-
-    InData0 <- list(MetData = MetData,
-                    GeoData = GeoData,
-                    TimeData = list(NDay = 1:viewGN))
     Param0 <- list(TimeStepSec = 3600,
                    GridN = viewGN)
     Arguments <- list(InData = InData0, Param = Param0)
-    if(runMode == "VIEW"){
-      vw <- viewArgum(fcName, Arguments)
-      return(list(Arguments = Arguments, Out = vw))
-    } else {
-      ck <- checkData(Arguments, list(InData = InData, Param = Param), "Arguments")
-      return()
-    }
+    ck <- checkData(Arguments, list(InData = InData, Param = Param), "Arguments")
   }
 
-  JDay <- InData$TimeData$NDay
-  Latitude <- InData$GeoData$Latitude
-  TMax <- InData$MetData$TMax
-  TMin <- InData$MetData$TMin
-  Tmean <- InData$MetData$TAir
+  JDay <- InData@TimeData@NDay
+  Latitude <- InData@GeoData@Latitude
+  TMax <- InData@MetData@TMax
+  TMin <- InData@MetData@TMin
+  Tmean <- InData@MetData@TAir
+  timN <- Param@PeriodN
+  gridN <- Param@GridN
 
+  JDay <- matrix(rep(JDay,gridN), timN, gridN)
+  Latitude <- matrix(rep(Latitude,timN), timN, gridN, byrow = T)
   EarthSun <- 1 + 0.033 * cos(2 * pi * JDay / 365.25)  #Equation 23
   SolarDeclination <- 0.409 * sin(2* pi *JDay / 365.25 - 1.39)  #Equation 24
   LatitudeRad <- pi * Latitude / 180 #Equation 25
@@ -181,7 +204,9 @@ ReferenceET.Hargreaves <- function(InData, Param, runMode = "RUN", viewGN = 3, .
        cos(LatitudeRad) * cos(SolarDeclination) * sin(SunsetHourAngle))  #Equation 27 ##Gsc = solar constant = 0.0820 MJ m-2 min-1;
   ExtraterrestrialRadiationMM <- ExtraterrestrialRadiation / 2.45  #B.25 ##(Ra in mm d-1 = Ra in MJ m-2 d-1 / 2.45).
   RET <- 0.0023 * (TMax - TMin)^0.5 * (Tmean + 17.8) * ExtraterrestrialRadiationMM
-  return(list(ET = data.frame(RET = RET)))
+  Out <- OutHargreaves()
+  Out@Evatrans@RET <- RET
+  return(Out)
 }
 
 #' AerodynamicResistance paramter caculate
@@ -233,21 +258,21 @@ ET <- function(InData, ...) UseMethod("ET", InData)
 #' @export ET.VIC
 #' @export
 ET.VIC <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
-  RET <- InData$ET$RET
-  PrecipitationHoch <- InData$Prec$Precipitation
+  RET <- InData@ET@RET
+  PrecipitationHoch <- InData@Prec@Precipitation
 
-  MoistureVolume <- InData$Intercept$Interception
+  MoistureVolume <- InData@Intercept@Interception
 
-  MoistureCapacityMax <- InData$Canopy$StorageCapacity
+  MoistureCapacityMax <- InData@Canopy@StorageCapacity
 
-  MoistureVolume1 <- InData$Ground$MoistureVolume
-  MoistureCapacityMax1 <- InData$Ground$MoistureCapacityMax
+  MoistureVolume1 <- InData@Ground@MoistureVolume
+  MoistureCapacityMax1 <- InData@Ground@MoistureCapacityMax
 
-  AerodynamicResistance <- InData$Aerodyna$AerodynaResist
-  ArchitecturalResistance <- InData$Aerodyna$ArchitecturalResist
-  StomatalResistance <- InData$Aerodyna$StomatalResist
+  AerodynamicResistance <- InData@Aerodyna@AerodynaResist
+  ArchitecturalResistance <- InData@Aerodyna@ArchitecturalResist
+  StomatalResistance <- InData@Aerodyna@StomatalResist
 
-  paSoilMoistureCapacityB <- Param$SoilMoistureCapacityB
+  paSoilMoistureCapacityB <- Param@SoilMoistureCapacityB
   EvaporationCnopyMax <- (MoistureVolume / MoistureCapacityMax)^0.6667 *
     (AerodynamicResistance / (AerodynamicResistance + ArchitecturalResistance)) * RET
   Rate <- minSVector(1, (MoistureVolume + PrecipitationHoch) / (EvaporationCnopyMax + DBL_EPSILON))
