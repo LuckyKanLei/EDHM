@@ -64,8 +64,6 @@ ReferenceET.PmMt <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
   if(runMode == "CHECK"){
     Param0 <- list(TimeStepSec = 3600,
                    GridN = viewGN)
-    ck <- checkData(Arguments, list(InData = InData, Param = Param), "Arguments")
-
   }
 
 
@@ -181,8 +179,6 @@ ReferenceET.Hargreaves <- function(InData, Param, runMode = "RUN", viewGN = 3, .
   if(runMode == "VIEW" | runMode == "CHECK"){
     Param0 <- list(TimeStepSec = 3600,
                    GridN = viewGN)
-    Arguments <- list(InData = InData0, Param = Param0)
-    ck <- checkData(Arguments, list(InData = InData, Param = Param), "Arguments")
   }
 
   JDay <- InData@TimeData@NDay
@@ -226,6 +222,41 @@ fctAerodynamicResistance <- function(VegetationDisplacementHeight, VegetationRou
 #' @return Actual evapotranspiration
 #' @export
 ET <- function(InData, ...) UseMethod("ET", InData)
+#' @title EtVic s4 class
+#' @importFrom methods new
+#' @export EtVic
+EtVic <- setClass("EtVic", contains = "HM.Data")
+CanopyEtVic <- setClass("CanopyEtVic",
+                        slots = c(StorageCapacity = "array"))
+InterceptEtVic <- setClass("InterceptEtVic",
+                           slots = c(Interception = "array"))
+PrecEtVic <- setClass("PrecEtVic",
+                      slots = c(Precipitation = "array"))
+EvatransEtVic <- setClass("EvatransEtVic",
+                          slots = c(RET = "array"))
+GroundEtVic <- setClass("GroundEtVic",
+                        slots = c(MoistureVolume = "array",
+                                  MoistureCapacityMax = "array"))
+AerodynaEtVic <- setClass("AerodynaEtVic",
+                          slots = c(AerodynaResist = "array",
+                                    ArchitecturalResist = "array",
+                                    StomatalResist = "array"))
+EvatransOutEtVic <- setClass("EvatransOutEtVic",
+                             slots = c(EvaporationCanopy = "array",
+                                       Transpiration = "array",
+                                       EvaporationLand = "array"))
+
+InEtVic <- setClass("InEtVic",
+                    slots = c(Canopy = "CanopyEtVic",
+                              Evatrans = "EvatransEtVic",
+                              Intercept = "InterceptEtVic",
+                              Prec = "PrecEtVic",
+                              Ground = "GroundEtVic",
+                              Aerodyna = "AerodynaEtVic"),
+                    contains = "EtVic")
+OutEtVic <- setClass("OutEtVic",
+                     slots = c(Evatrans = "EvatransOutEtVic"),
+                     contains = "HM.Data")
 
 #' Actual evapotranspiration in VIC
 #' @references Liang X, Lettenmaier D P. A simple hydrologically based model of land surface water and energy fluxes for general circulation models[J]. Journal of Geophysical Research, 1994(99):415-428.
@@ -255,10 +286,11 @@ ET <- function(InData, ...) UseMethod("ET", InData)
 #' @param viewGN grid nummer for "VIEW" mode.
 #' @param ... other Parmeters
 #' @return Actual evapotranspiration
-#' @export ET.VIC
+#' @export ET.EtVic
 #' @export
-ET.VIC <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
-  RET <- InData@ET@RET
+ET.EtVic <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
+  RET <- InData@Evatrans@RET
+
   PrecipitationHoch <- InData@Prec@Precipitation
 
   MoistureVolume <- InData@Intercept@Interception
@@ -296,7 +328,11 @@ ET.VIC <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
   Rate3 <- maxSVector(0.0,minSVector(1.0,SaturatedArea + (1 - SaturatedArea) * 0.3))
   EvaporationSoil <- Rate3 * RET
   EvaporationSoil <- minVector(MoistureVolume1 - Transpiration,EvaporationSoil)
-  return(list(ET = list(EvaporationCanopy = EvaporationCanopy, Transpiration = Transpiration, EvaporationLand = EvaporationSoil)))
+  Out <- OutEtVic()
+  Out@Evatrans@EvaporationCanopy <- EvaporationCanopy
+  Out@Evatrans@Transpiration <- Transpiration
+  Out@Evatrans@EvaporationLand <- EvaporationSoil
+  return(Out)
 }
 
 

@@ -7,13 +7,13 @@
 \method{ReferenceET}{Hargreaves}(InData, Param, runMode = "RUN", viewGN = 3, ...)
 }
 \arguments{
-\item{InData}{list of: JDay, Latitude, Tmax, Tmin, Tmean
+\item{InData}{list of: JDay, Latitude, TMax, TMin, Tmean
 \itemize{
 \item JDay, date
 \item Latitude
-\item Tmax, oC, Celius
-\item Tmin, oC, Celius
-\item Tmean, oC, Celius
+\item TMax, oC, Celius
+\item TMin, oC, Celius
+\item TAir, oC, Celius
 }}
 
 \item{Param}{paramlist, in this R packege ParamAll dataset there are alredy most parameters,}

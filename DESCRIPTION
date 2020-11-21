@@ -33,10 +33,11 @@ Imports:
     hydroGOF,
     hydroTSM,
     purrr,
-    magrittr
+    magrittr,
+    methods
 Depends:
     R (>= 3.0.0)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1

@@ -4,6 +4,29 @@
 #' @return INTERCEPTION
 #' @export
 INTERCEPTION <- function(InData, ...) UseMethod("INTERCEPTION", InData)
+#' @title Gash s4 class
+#' @importFrom methods new
+#' @export Gash
+Gash <- setClass("Gash", contains = "HM.Data")
+CanopyGash <- setClass("CanopyGash",
+                       slots = c(StorageCapacity = "array"))
+InterceptGash <- setClass("InterceptGash",
+                          slots = c(Interception = "array"))
+PrecGash <- setClass("PrecGash",
+                     slots = c(Precipitation = "array"))
+EvatransGash <- setClass("EvatransGash",
+                         slots = c(EvaporationCanopy = "array"))
+
+InGash <- setClass("InGash",
+                   slots = c(Canopy = "CanopyGash",
+                             Evatrans = "EvatransGash",
+                             Intercept = "InterceptGash",
+                             Prec = "PrecGash"),
+                   contains = "Gash")
+OutGash <- setClass("OutGash",
+                    slots = c(Intercept = "InterceptGash",
+                              Prec = "PrecGash"),
+                    contains = "HM.Data")
 
 #' INTERCEPTION whith Gash methond
 #' @references Gash J H C. An analytical model of rainfall interception by forests[J]. Quarterly Journal of the Royal Meteorological Society, 1978(105):43-55.
@@ -30,11 +53,11 @@ INTERCEPTION <- function(InData, ...) UseMethod("INTERCEPTION", InData)
 #' @export INTERCEPTION.Gash
 #' @export
 INTERCEPTION.Gash <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
-  CanopyStorageCapacity <- InData$Canopy$StorageCapacity - InData$Intercept$Interception
-  RainfallDuringSaturation <- InData$Prec$Precipitation
-  Evaporation <- InData$ET$EvaporationCanopy
+  CanopyStorageCapacity <- InData@Canopy@StorageCapacity - InData@Intercept@Interception
+  RainfallDuringSaturation <- InData@Prec@Precipitation
+  Evaporation <- InData@Evatrans@EvaporationCanopy
 
-  paCoefficientFreeThroughfall <- Param$CoefficientFreeThroughfall
+  paCoefficientFreeThroughfall <- Param@CoefficientFreeThroughfall
 
   NecessaryToSaturateCanopy <- (-1 * RainfallDuringSaturation *
                                   CanopyStorageCapacity / (Evaporation + DBL_EPSILON)) *
@@ -43,8 +66,10 @@ INTERCEPTION.Gash <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
   returnTem <- minVector(RainfallDuringSaturation,
                          minVector(CanopyStorageCapacity, NecessaryToSaturateCanopy))
   returnTem[is.na(returnTem)] <- 0.0
-  return(list(Intercept = list(Interception = InData$Intercept$Interception + returnTem - Evaporation),
-              Prec = list(Precipitation = RainfallDuringSaturation - returnTem)))
+  Out <- OutGash()
+  Out@Intercept@Interception <- InData@Intercept@Interception + returnTem - Evaporation
+  Out@Prec@Precipitation <- RainfallDuringSaturation - returnTem
+  return(Out)
 }
 
 

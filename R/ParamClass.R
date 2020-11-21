@@ -1,4 +1,6 @@
-#' all parameters.
+#' @title PmMt s4 class
+#' @importFrom methods new
+#' @export PmMt
 EDHM.Param <- setClass("EDHM.Param",
                        slots = c(
                          LAPSE_RATE = "numeric",
@@ -266,7 +268,7 @@ EDHM.Param <- setClass("EDHM.Param",
                          BLOWING_SPATIAL_WIND = "numeric",
                          BLOWING_VAR_THRESHOLD = "numeric",
                          SPATIAL_SNOW = "numeric"),
-                       prototype =   list(
+                       prototype = list(
   ###############################################################################
   LAPSE_RATE = -0.0065, # temperature lapse rate in C/m
   ###############################################################################

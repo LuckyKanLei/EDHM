@@ -4,6 +4,21 @@
 #' @return BASEFLOW
 #' @export
 BASEFLOW <- function(InData, ...) UseMethod("BASEFLOW", InData)
+#' @title Arnold s4 class
+#' @importFrom methods new
+#' @export Arnold
+Arnold <- setClass("Arnold", contains = "HM.Data")
+GroundArnold <- setClass("GroundArnold",
+                         slots = c(MoistureVolume = "array",
+                                   MoistureCapacityMax = "array"))
+InArnold <- setClass("InArnold",
+                     slots = c(Ground = "GroundArnold"),
+                     contains = "Arnold")
+GroundOutArnold <- setClass("GroundOutArnold",
+                            slots = c(BaseFlow = "array"))
+OutArnold <- setClass("OutArnold",
+                      slots = c(Ground = "GroundOutArnold"),
+                      contains = "HM.Data")
 
 #' baseflow
 #' @references Arnold J G, Srinivasan R, Muttiah R S et al. Large area hydrologic modeling and assessmentpart I: Model Develoment [J]. Journal of the American Water Resources Association, 1998(34):73-89.
@@ -28,17 +43,17 @@ BASEFLOW <- function(InData, ...) UseMethod("BASEFLOW", InData)
 #' @param viewGN grid nummer for "VIEW" mode.
 #' @param ... other Parmeters
 #' @return baseflow
-#' @export BASEFLOW.ARNO
+#' @export BASEFLOW.Arnold
 #' @export
-BASEFLOW.ARNO <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
+BASEFLOW.Arnold <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
 
-  SoilMoistureVolume <- InData$Ground$MoistureVolume
-  SoilMoistureVolumeMax <- InData$Ground$MoistureCapacityMax
+  SoilMoistureVolume <- InData@Ground@MoistureVolume
+  SoilMoistureVolumeMax <- InData@Ground@MoistureCapacityMax
 
-  paExponentARNOBase <- Param$ExponentARNOBase
-  paSoilMoistureVolumeARNOBaseThresholdRadio <- Param$ARNOBaseThresholdRadio
-  paDrainageLossMax <- Param$DrainageLossMax
-  paDrainageLossMin <- Param$DrainageLossMin
+  paExponentARNOBase <- Param@ExponentARNOBase
+  paSoilMoistureVolumeARNOBaseThresholdRadio <- Param@ARNOBaseThresholdRadio
+  paDrainageLossMax <- Param@DrainageLossMax
+  paDrainageLossMin <- Param@DrainageLossMin
 
   SoilMoistureVolumeARNOBaseThreshold <- paSoilMoistureVolumeARNOBaseThresholdRadio * SoilMoistureVolumeMax
   TEMMin <- paDrainageLossMin * SoilMoistureVolume / SoilMoistureVolumeMax
@@ -48,6 +63,8 @@ BASEFLOW.ARNO <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
   TEMDiff <- SoilMoistureVolume - SoilMoistureVolumeARNOBaseThreshold
   TEM <- TEMMin
   TEM[which(TEMDiff > 0.0)] <- TEMMax[which(TEMDiff > 0.0)]
-  return(list(Ground = list(BaseFlow = minVector(SoilMoistureVolume, TEM))))
+  Out <- OutArnold()
+  Out@Ground@BaseFlow <- minVector(SoilMoistureVolume, TEM)
+  return(Out)
 }
 
