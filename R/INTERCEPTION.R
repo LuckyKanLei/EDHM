@@ -18,18 +18,11 @@ INTERCEPTION <- function(InData, ...) UseMethod("INTERCEPTION", InData)
 #' \itemize{
 #' \item paCoefficientFreeThroughfall
 #' }
-#' @param runMode mode to run the function, there three mode:
-#' \itemize{
-#' \item "RUN": default, run the function like general faunction
-#' \item "VIEW": view the structures of Arguments and Output(return)
-#' \item "CHECK": chek the structure of the Arguments
-#' }
-#' @param viewGN grid nummer for "VIEW" mode.
 #' @param ... other Parmeters
 #' @return INTERCEPTION
 #' @export INTERCEPTION.Gash
 #' @export
-INTERCEPTION.Gash <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
+INTERCEPTION.Gash <- function(InData, Param, ...){
   CanopyStorageCapacity <- InData$Canopy$StorageCapacity - InData$Intercept$Interception
   RainfallDuringSaturation <- InData$Prec$Precipitation
   Evaporation <- InData$ET$EvaporationCanopy

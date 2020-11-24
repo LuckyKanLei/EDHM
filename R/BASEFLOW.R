@@ -19,18 +19,11 @@ BASEFLOW <- function(InData, ...) UseMethod("BASEFLOW", InData)
 #' \item paExponentARNOBase
 #' \item paSoilMoistureVolumeARNOBaseThresholdRadio
 #' }
-#' @param runMode mode to run the function, there three mode:
-#' \itemize{
-#' \item "RUN": default, run the function like general faunction
-#' \item "VIEW": view the structures of Arguments and Output(return)
-#' \item "CHECK": chek the structure of the Arguments
-#' }
-#' @param viewGN grid nummer for "VIEW" mode.
 #' @param ... other Parmeters
 #' @return baseflow
 #' @export BASEFLOW.ARNO
 #' @export
-BASEFLOW.ARNO <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
+BASEFLOW.ARNO <- function(InData, Param, ...){
 
   SoilMoistureVolume <- InData$Ground$MoistureVolume
   SoilMoistureVolumeMax <- InData$Ground$MoistureCapacityMax

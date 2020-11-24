@@ -16,18 +16,11 @@ InfiltratRat <- function(InData, ...) UseMethod("InfiltratRat", InData)
 #' \item SoilMoistureVolume
 #' }
 #' @param Param Param
-#' @param runMode mode to run the function, there three mode:
-#' \itemize{
-#' \item "RUN": default, run the function like general faunction
-#' \item "VIEW": view the structures of Arguments and Output(return)
-#' \item "CHECK": chek the structure of the Arguments
-#' }
-#' @param viewGN grid nummer for "VIEW" mode.
 #' @param ... other Parmeters
 #' @return Infiltration rat
 #' @export InfiltratRat.GreenAmpt
 #' @export
-InfiltratRat.GreenAmpt <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
+InfiltratRat.GreenAmpt <- function(InData, Param, ...){
   HydraulicConductivity <- InData$Ground$Conductivity
   WettingFrontSoilSuction <- InData$Ground$WettingFrontSuction
   EffectivePorosity <- InData$Ground$Porosity
@@ -98,7 +91,7 @@ Infiltration <- function(InData, ...) UseMethod("Infiltration", InData)
 #' @return SoilInfiltration in SaturationExcessRunoff modell
 #' @export Infiltration.SER
 #' @export
-Infiltration.SER <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
+Infiltration.SER <- function(InData, Param, ...){
   PrecipitationHoch <- InData$Prec$Precipitation
   SoilMoistureCapacityMax <- InData$Ground$MoistureCapacityMax
   SoilMoistureCapacity <- InData$Ground$MoistureCapacity
@@ -128,18 +121,11 @@ Infiltration.SER <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
 #' \itemize{
 #' \item paInfiltrationRateB
 #' }
-#' @param runMode mode to run the function, there three mode:
-#' \itemize{
-#' \item "RUN": default, run the function like general faunction
-#' \item "VIEW": view the structures of Arguments and Output(return)
-#' \item "CHECK": chek the structure of the Arguments
-#' }
-#' @param viewGN grid nummer for "VIEW" mode.
 #' @param ... other Parmeters
 #' @return Infiltration rate in Over Infil tration Excess Runoff
 #' @export Infiltration.OIER
 #' @export
-Infiltration.OIER <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
+Infiltration.OIER <- function(InData, Param, ...){
   PrecipitationHoch <- InData$Prec$Precipitation
   InfiltrationRateMax <- InData$Infilt$InfiltrationRat
 
@@ -177,13 +163,6 @@ RUNOFF <- function(InData, ...) UseMethod("RUNOFF", InData)
 #' \itemize{
 #' \item paSoilMoistureCapacityB
 #' }
-#' @param runMode mode to run the function, there three mode:
-#' \itemize{
-#' \item "RUN": default, run the function like general faunction
-#' \item "VIEW": view the structures of Arguments and Output(return)
-#' \item "CHECK": chek the structure of the Arguments
-#' }
-#' @param viewGN grid nummer for "VIEW" mode.
 #' @param ... other Parmeters
 #' @return 2-list of:
 #' \itemize{
@@ -192,7 +171,7 @@ RUNOFF <- function(InData, ...) UseMethod("RUNOFF", InData)
 #' }
 #' @export RUNOFF.SER
 #' @export
-RUNOFF.SER <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
+RUNOFF.SER <- function(InData, Param, ...){
   PrecipitationHoch <- InData$Prec$Precipitation
   SoilMoistureCapacityMax <- InData$Ground$MoistureCapacityMax
   SoilMoistureVolum <- InData$Ground$MoistureVolume
@@ -203,7 +182,7 @@ RUNOFF.SER <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
   class(SIInData) = "SER"
   SoilInfiltrationSER <- Infiltration(SIInData, Param)
   SaturationExcessRunoff <- PrecipitationHoch - SoilInfiltrationSER
-  return(list(Ground = data.frame(Runoff = SaturationExcessRunoff), Infilt = data.frame(Infiltration = SoilInfiltrationSER)))
+  return(list(Ground = list(Runoff = SaturationExcessRunoff), Infilt = list(Infiltration = SoilInfiltrationSER)))
 }
 
 #' Infiltration in OverInfiltrationExcessRunoff
@@ -232,13 +211,13 @@ RUNOFF.SER <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
 #' }
 #' @export RUNOFF.OIER
 #' @export
-RUNOFF.OIER <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
+RUNOFF.OIER <- function(InData, Param, ...){
   PrecipitationHoch <- InData$Prec$Precipitation
   InfiltrationRateMax <- InData$Infilt$InfiltrationRateMax
   class(InData) <- "OIER"
   SoilInfiltrationOIER <- Infiltration(InData, Param)
   OverInfiltrationExcessRunoff <- maxSVector(0.0,PrecipitationHoch - SoilInfiltrationOIER)
-  return(list(Ground = data.frame(Runoff = OverInfiltrationExcessRunoff), Infilt = data.frame(Infiltration = SoilInfiltrationOIER)))
+  return(list(Ground = list(Runoff = OverInfiltrationExcessRunoff), Infilt = list(Infiltration = SoilInfiltrationOIER)))
 }
 
 #' find the rate of SER and OIER
@@ -303,7 +282,7 @@ fctVICRateFind <- function(rate, PrecipitationHoch,
 #' }
 #' @export RUNOFF.VIC
 #' @export
-RUNOFF.VIC <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
+RUNOFF.Vic <- function(InData, Param, ...){
   PrecipitationHoch <- InData$Prec$Precipitation
   SoilMoistureCapacityMax <- InData$Ground$MoistureCapacityMax
   SoilMoistureVolume <- InData$Ground$MoistureVolume
@@ -346,7 +325,7 @@ RUNOFF.VIC <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
                                                                                          MoistureCapacity = SoilMoistureCapacity)),
                                                                       Param))$Infilt$Infiltration[is.na(SoilInfiltrationVIC)]
   RunoffVIC <- PrecipitationHoch - SoilInfiltrationVIC
-  return(list(Ground = data.frame(Runoff = RunoffVIC), Infilt = data.frame(Infiltration = SoilInfiltrationVIC), RatSER = RatSER))
+  return(list(Ground = list(Runoff = RunoffVIC), Infilt = list(Infiltration = SoilInfiltrationVIC)))
 }
 
 
@@ -366,13 +345,6 @@ RUNOFF.VIC <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
 #' \item paSoilMoistureCapacityB
 #' \item paInfiltrationRateB
 #' }
-#' @param runMode mode to run the function, there three mode:
-#' \itemize{
-#' \item "RUN": default, run the function like general faunction
-#' \item "VIEW": view the structures of Arguments and Output(return)
-#' \item "CHECK": chek the structure of the Arguments
-#' }
-#' @param viewGN grid nummer for "VIEW" mode.
 #' @param ... other Parmeters
 #' @return 2-list of:
 #' \itemize{
@@ -381,7 +353,7 @@ RUNOFF.VIC <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
 #' }
 #' @export RUNOFF.VM
 #' @export
-RUNOFF.VM <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
+RUNOFF.VM <- function(InData, Param, ...){
   PrecipitationHoch <- InData$Prec$Precipitation
   SoilMoistureCapacity <- InData$Ground$MoistureCapacity
   SoilMoistureCapacityMax <- InData$Ground$MoistureCapacityMax
@@ -398,7 +370,7 @@ RUNOFF.VM <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
   class(SIInData) = "SER"
   SoilInfiltrationSER <- Infiltration(SIInData, Param)
   SaturationExcessRunoff <- SoilInfiltrationOIER - SoilInfiltrationSER
-  return(list(Ground = data.frame(Runoff = OverInfiltrationExcessRunoff + SaturationExcessRunoff), Infilt = data.frame(Infiltration = SoilInfiltrationSER)))
+  return(list(Ground = list(Runoff = OverInfiltrationExcessRunoff + SaturationExcessRunoff), Infilt = list(Infiltration = SoilInfiltrationSER)))
 }
 
 

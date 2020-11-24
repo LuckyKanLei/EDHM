@@ -21,18 +21,11 @@ ReferenceET <- function(InData, ...) UseMethod("ReferenceET", InData)
 #' \item RelativeHumidity,
 #' }
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
-#' @param runMode mode to run the function, there three mode:
-#' \itemize{
-#' \item "RUN": default, run the function like general faunction
-#' \item "VIEW": view the structures of Arguments and Output(return)
-#' \item "CHECK": chek the structure of the Arguments
-#' }
-#' @param viewGN grid nummer for "VIEW" mode.
 #' @param ... other Parmeters
 #' @return Reference ET with PenmanMonteith methond
 #' @export ReferenceET.PenmanMonteith
 #' @export
-ReferenceET.PenmanMonteith <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
+ReferenceET.PenMon <- function(InData, Param, ...){
   JDay <- InData$TimeData$NDay
   Elevation <- InData$GeoData$Elevation
   Latitude <- InData$GeoData$Latitude
@@ -82,7 +75,7 @@ ReferenceET.PenmanMonteith <- function(InData, Param, runMode = "RUN", viewGN = 
   ETRadiation <- DeltTerm * EquivalentNetRadiation #Equation 33
   ETWind <- PressureTerm * TemperatureTerm * (SaturationVaporPressure - ActualVaporPressure)  #Equation 34
   RET <- ETRadiation + ETWind  #Equation 35
-  return(list(ET = list(RET = RET)))
+  return(list(Evatrans = list(RET = RET)))
 }
 
 
@@ -97,23 +90,18 @@ ReferenceET.PenmanMonteith <- function(InData, Param, runMode = "RUN", viewGN = 
 #' \item Tmean, oC, Celius
 #' }
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
-#' @param runMode mode to run the function, there three mode:
-#' \itemize{
-#' \item "RUN": default, run the function like general faunction
-#' \item "VIEW": view the structures of Arguments and Output(return)
-#' \item "CHECK": chek the structure of the Arguments
-#' }
-#' @param viewGN grid nummer for "VIEW" mode.
 #' @param ... other Parmeters
 #' @return ReferenceET with Hargreaves methond
 #' @export ReferenceET.Hargreaves
 #' @export
-ReferenceET.Hargreaves <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
+ReferenceET.Hargreaves <- function(InData, Param, ...){
   JDay <- InData$TimeData$NDay
   Latitude <- InData$GeoData$Latitude
   Tmax <- InData$MetData$Tmax
   Tmin <- InData$MetData$Tmin
   Tmean <- InData$MetData$Tmean
+  JDay <- matrix(rep(JDay,gridN), timN, gridN)
+  Latitude <- matrix(rep(Latitude,timN), timN, gridN, byrow = T)
 
   EarthSun <- 1 + 0.033 * cos(2 * pi * JDay / 365.25)  #Equation 23
   SolarDeclination <- 0.409 * sin(2* pi *JDay / 365.25 - 1.39)  #Equation 24
@@ -124,7 +112,7 @@ ReferenceET.Hargreaves <- function(InData, Param, runMode = "RUN", viewGN = 3, .
        cos(LatitudeRad) * cos(SolarDeclination) * sin(SunsetHourAngle))  #Equation 27 ##Gsc = solar constant = 0.0820 MJ m-2 min-1;
   ExtraterrestrialRadiationMM <- ExtraterrestrialRadiation / 2.45  #B.25 ##(Ra in mm d-1 = Ra in MJ m-2 d-1 / 2.45).
   RET <- 0.0023 * (Tmax - Tmin)^0.5 * (Tmean + 17.8) * ExtraterrestrialRadiationMM
-  return(list(ET = data.frame(RET = RET)))
+  return(list(Evatrans = data.frame(RET = RET)))
 }
 
 #' AerodynamicResistance paramter caculate
@@ -143,7 +131,7 @@ fctAerodynamicResistance <- function(VegetationDisplacementHeight, VegetationRou
 #' @param ... paramlist, in this R packege ParamAll dataset there are alredy most parameters,
 #' @return Actual evapotranspiration
 #' @export
-ET <- function(InData, ...) UseMethod("ET", InData)
+ActualET <- function(InData, ...) UseMethod("ActualET", InData)
 
 #' Actual evapotranspiration in VIC
 #' @references Liang X, Lettenmaier D P. A simple hydrologically based model of land surface water and energy fluxes for general circulation models[J]. Journal of Geophysical Research, 1994(99):415-428.
@@ -164,19 +152,12 @@ ET <- function(InData, ...) UseMethod("ET", InData)
 #' \itemize{
 #' \item paramSoilMoistureCapacityB
 #' }
-#' @param runMode mode to run the function, there three mode:
-#' \itemize{
-#' \item "RUN": default, run the function like general faunction
-#' \item "VIEW": view the structures of Arguments and Output(return)
-#' \item "CHECK": chek the structure of the Arguments
-#' }
-#' @param viewGN grid nummer for "VIEW" mode.
 #' @param ... other Parmeters
 #' @return Actual evapotranspiration
-#' @export ET.VIC
+#' @export ActualET.VIC
 #' @export
-ET.VIC <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
-  RET <- InData$ET$RET
+ActualET.Vic <- function(InData, Param, ...){
+  RET <- InData$Evatrans$RET
   PrecipitationHoch <- InData$Prec$Precipitation
 
   MoistureVolume <- InData$Intercept$Interception
@@ -214,7 +195,7 @@ ET.VIC <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
   Rate3 <- maxSVector(0.0,minSVector(1.0,SaturatedArea + (1 - SaturatedArea) * 0.3))
   EvaporationSoil <- Rate3 * RET
   EvaporationSoil <- minVector(MoistureVolume1 - Transpiration,EvaporationSoil)
-  return(list(ET = list(EvaporationCanopy = EvaporationCanopy, Transpiration = Transpiration, EvaporationLand = EvaporationSoil)))
+  return(list(Evatrans = list(EvaporationCanopy = EvaporationCanopy, Transpiration = Transpiration, EvaporationLand = EvaporationSoil)))
 }
 
 
