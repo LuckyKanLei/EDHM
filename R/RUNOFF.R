@@ -80,13 +80,6 @@ Infiltration <- function(InData, ...) UseMethod("Infiltration", InData)
 #' \itemize{
 #' \item paSoilMoistureCapacityB
 #' }
-#' @param runMode mode to run the function, there three mode:
-#' \itemize{
-#' \item "RUN": default, run the function like general faunction
-#' \item "VIEW": view the structures of Arguments and Output(return)
-#' \item "CHECK": chek the structure of the Arguments
-#' }
-#' @param viewGN grid nummer for "VIEW" mode.
 #' @param ... other Parmeters
 #' @return SoilInfiltration in SaturationExcessRunoff modell
 #' @export Infiltration.SER
@@ -196,13 +189,6 @@ RUNOFF.SER <- function(InData, Param, ...){
 #' \itemize{
 #' \item paSoilMoistureCapacityB
 #' }
-#' @param runMode mode to run the function, there three mode:
-#' \itemize{
-#' \item "RUN": default, run the function like general faunction
-#' \item "VIEW": view the structures of Arguments and Output(return)
-#' \item "CHECK": chek the structure of the Arguments
-#' }
-#' @param viewGN grid nummer for "VIEW" mode.
 #' @param ... other Parmeters
 #' @return 2-list of:
 #' \itemize{
@@ -267,20 +253,13 @@ fctVICRateFind <- function(rate, PrecipitationHoch,
 #' \item paSoilMoistureCapacityB
 #' \item paInfiltrationRateB
 #' }
-#' @param runMode mode to run the function, there three mode:
-#' \itemize{
-#' \item "RUN": default, run the function like general faunction
-#' \item "VIEW": view the structures of Arguments and Output(return)
-#' \item "CHECK": chek the structure of the Arguments
-#' }
-#' @param viewGN grid nummer for "VIEW" mode.
 #' @param ... other Parmeters
 #' @return 2-list of:
 #' \itemize{
 #' \item Runoff
 #' \item Infiltration
 #' }
-#' @export RUNOFF.VIC
+#' @export RUNOFF.Vic
 #' @export
 RUNOFF.Vic <- function(InData, Param, ...){
   PrecipitationHoch <- InData$Prec$Precipitation

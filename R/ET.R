@@ -23,7 +23,7 @@ ReferenceET <- function(InData, ...) UseMethod("ReferenceET", InData)
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
 #' @param ... other Parmeters
 #' @return Reference ET with PenmanMonteith methond
-#' @export ReferenceET.PenmanMonteith
+#' @export ReferenceET.PenMon
 #' @export
 ReferenceET.PenMon <- function(InData, Param, ...){
   JDay <- InData$TimeData$NDay
@@ -100,6 +100,10 @@ ReferenceET.Hargreaves <- function(InData, Param, ...){
   Tmax <- InData$MetData$Tmax
   Tmin <- InData$MetData$Tmin
   Tmean <- InData$MetData$Tmean
+  timN <- Param$PeriodN
+  gridN <- Param$GridN
+
+
   JDay <- matrix(rep(JDay,gridN), timN, gridN)
   Latitude <- matrix(rep(Latitude,timN), timN, gridN, byrow = T)
 
@@ -154,7 +158,7 @@ ActualET <- function(InData, ...) UseMethod("ActualET", InData)
 #' }
 #' @param ... other Parmeters
 #' @return Actual evapotranspiration
-#' @export ActualET.VIC
+#' @export ActualET.Vic
 #' @export
 ActualET.Vic <- function(InData, Param, ...){
   RET <- InData$Evatrans$RET

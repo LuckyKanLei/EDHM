@@ -4,7 +4,7 @@
 \alias{BASEFLOW.ARNO}
 \title{baseflow}
 \usage{
-\method{BASEFLOW}{ARNO}(InData, Param, runMode = "RUN", viewGN = 3, ...)
+\method{BASEFLOW}{ARNO}(InData, Param, ...)
 }
 \arguments{
 \item{InData}{2-list of:
@@ -20,15 +20,6 @@
 \item paExponentARNOBase
 \item paSoilMoistureVolumeARNOBaseThresholdRadio
 }}
-
-\item{runMode}{mode to run the function, there three mode:
-\itemize{
-\item "RUN": default, run the function like general faunction
-\item "VIEW": view the structures of Arguments and Output(return)
-\item "CHECK": chek the structure of the Arguments
-}}
-
-\item{viewGN}{grid nummer for "VIEW" mode.}
 
 \item{...}{other Parmeters}
 }

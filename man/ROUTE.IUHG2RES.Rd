@@ -4,21 +4,12 @@
 \alias{ROUTE.IUHG2RES}
 \title{use IUH calculate flow from grid to station}
 \usage{
-\method{ROUTE}{IUHG2RES}(InData, Param, runMode = "RUN", viewGN = 3, ...)
+\method{ROUTE}{IUHG2RES}(InData, Param, ...)
 }
 \arguments{
 \item{InData}{indata list, use snow_density(runMode = "VIEW") view the variables and theirs structures}
 
 \item{Param}{paramlist, in this R packege ParamAll dataset there are alredy most parameters,}
-
-\item{runMode}{mode to run the function, there three mode:
-\itemize{
-\item "RUN": default, run the function like general faunction
-\item "VIEW": view the structures of Arguments and Output(return)
-\item "CHECK": chek the structure of the Arguments
-}}
-
-\item{viewGN}{grid nummer for "VIEW" mode.}
 
 \item{...}{other Parmeters}
 }

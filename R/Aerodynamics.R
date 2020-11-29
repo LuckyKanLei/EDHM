@@ -7,46 +7,38 @@
 #' WindUref, you need to multiply the here calculated wind speeds by WindUref
 #' and divide the here calculated aerodynamic resistances by WindUref.
 #' @importFrom stats runif
-#' @importFrom  HMtools mergeData deleteData viewArgum checkData putUnit
 #' @param InData indata list, use SNOWAerodyna(runMode = "VIEW") view the variables and theirs structures
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
 #' the other parameters depednd on the actuell model, eg. TimeStepSec, gridN.
 #' and use SNOWAerodyna(runMode = "VIEW") view the structure
-#' @param runMode mode to run the function, there three mode:
-#' \itemize{
-#' \item "RUN": default, run the function like general faunction
-#' \item "VIEW": view the structures of Arguments and Output(return)
-#' \item "CHECK": chek the structure of the Arguments
-#' }
-#' @param viewGN grid nummer for "VIEW" mode.
 #' @return use Aerodyna.SNOWVIC(runMode = "VIEW") view the outputs and theirs structure
 #' @export
-Aerodyna.SNOWVIC <- function(InData, Param, runMode = "RUN", viewGN = 3) {
-  if(runMode == "VIEW" | runMode == "CHECK"){
-    fcName <- "Aerodyna.SNOWVIC"
-    MetData <- data.frame(WindSpeed = runif(viewGN, 0, 90), WindSpeed = runif(viewGN, 1, 90))
-    MetData <- putUnit(MetData, c("m/s", "m"))
-    VegData <- data.frame(IsOverstory = rep(T, viewGN),
-                          # VegHeight = runif(viewGN, 0.5, 20),
-                          TrunkRatio = runif(viewGN, 0.1, 0.9),
-                          Displacement = rep(0., viewGN),
-                          # RefHeight = rep(0., viewGN),
-                          Roughness = rep(0., viewGN),
-                          WindAttenuation = rep(0., viewGN))
-    SoilData <- data.frame(Roughness = rep(0., viewGN))
-    LandData <- data.frame(SnowRough = rep(0., viewGN))
-    InData0 <- list(MetData = MetData, VegData = VegData, SoilData = SoilData, LandData = LandData)
-    Param0 <- list(HUGE_RESIST = ParamAll$HUGE_RESIST, VEG_RATIO_DH_HEIGHT = ParamAll$VEG_RATIO_DH_HEIGHT)
-    Arguments <- list(InData = InData0, Param = Param0)
-
-    if(runMode == "VIEW"){
-      vw <- viewArgum(fcName, Arguments)
-      return(list(Arguments = Arguments, Out = vw))
-    } else {
-      ck <- checkData(Arguments, list(InData = InData, Param = Param), "Arguments")
-      return()
-    }
-  }
+Aerodyna.SNOWVIC <- function(InData, Param) {
+  # if(runMode == "VIEW" | runMode == "CHECK"){
+  #   fcName <- "Aerodyna.SNOWVIC"
+  #   MetData <- data.frame(WindSpeed = runif(viewGN, 0, 90), WindSpeed = runif(viewGN, 1, 90))
+  #   MetData <- putUnit(MetData, c("m/s", "m"))
+  #   VegData <- data.frame(IsOverstory = rep(T, viewGN),
+  #                         # VegHeight = runif(viewGN, 0.5, 20),
+  #                         TrunkRatio = runif(viewGN, 0.1, 0.9),
+  #                         Displacement = rep(0., viewGN),
+  #                         # RefHeight = rep(0., viewGN),
+  #                         Roughness = rep(0., viewGN),
+  #                         WindAttenuation = rep(0., viewGN))
+  #   SoilData <- data.frame(Roughness = rep(0., viewGN))
+  #   LandData <- data.frame(SnowRough = rep(0., viewGN))
+  #   InData0 <- list(MetData = MetData, VegData = VegData, SoilData = SoilData, LandData = LandData)
+  #   Param0 <- list(HUGE_RESIST = ParamAll$HUGE_RESIST, VEG_RATIO_DH_HEIGHT = ParamAll$VEG_RATIO_DH_HEIGHT)
+  #   Arguments <- list(InData = InData0, Param = Param0)
+  #
+  #   if(runMode == "VIEW"){
+  #     vw <- viewArgum(fcName, Arguments)
+  #     return(list(Arguments = Arguments, Out = vw))
+  #   } else {
+  #     ck <- checkData(Arguments, list(InData = InData, Param = Param), "Arguments")
+  #     return()
+  #   }
+  # }
   ISLIST <- length(dim(InData$MetData$WindSpeed)) > 1
   OverStory <- as.logical(InData$VegData$IsOverstory) #### overstory flag
   # Height <- InData$VegData$VegHeight #### vegetation height

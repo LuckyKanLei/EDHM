@@ -4,7 +4,7 @@
 \alias{Aerodyna.SNOWVIC}
 \title{SNOWAerodyna}
 \usage{
-Aerodyna.SNOWVIC(InData, Param, runMode = "RUN", viewGN = 3)
+Aerodyna.SNOWVIC(InData, Param)
 }
 \arguments{
 \item{InData}{indata list, use SNOWAerodyna(runMode = "VIEW") view the variables and theirs structures}
@@ -12,15 +12,6 @@ Aerodyna.SNOWVIC(InData, Param, runMode = "RUN", viewGN = 3)
 \item{Param}{paramlist, in this R packege ParamAll dataset there are alredy most parameters,
 the other parameters depednd on the actuell model, eg. TimeStepSec, gridN.
 and use SNOWAerodyna(runMode = "VIEW") view the structure}
-
-\item{runMode}{mode to run the function, there three mode:
-\itemize{
-\item "RUN": default, run the function like general faunction
-\item "VIEW": view the structures of Arguments and Output(return)
-\item "CHECK": chek the structure of the Arguments
-}}
-
-\item{viewGN}{grid nummer for "VIEW" mode.}
 }
 \value{
 use Aerodyna.SNOWVIC(runMode = "VIEW") view the outputs and theirs structure

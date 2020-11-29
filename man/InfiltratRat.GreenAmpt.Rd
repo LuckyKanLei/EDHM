@@ -4,7 +4,7 @@
 \alias{InfiltratRat.GreenAmpt}
 \title{Infiltration with GreenAmpt methond}
 \usage{
-\method{InfiltratRat}{GreenAmpt}(InData, Param, runMode = "RUN", viewGN = 3, ...)
+\method{InfiltratRat}{GreenAmpt}(InData, Param, ...)
 }
 \arguments{
 \item{InData}{5-list of:
@@ -17,15 +17,6 @@
 }}
 
 \item{Param}{Param}
-
-\item{runMode}{mode to run the function, there three mode:
-\itemize{
-\item "RUN": default, run the function like general faunction
-\item "VIEW": view the structures of Arguments and Output(return)
-\item "CHECK": chek the structure of the Arguments
-}}
-
-\item{viewGN}{grid nummer for "VIEW" mode.}
 
 \item{...}{other Parmeters}
 }

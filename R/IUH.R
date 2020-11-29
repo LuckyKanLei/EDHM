@@ -111,17 +111,10 @@ makeUH <- function(UHMethond, UHParam, Param){
 #' @importFrom purrr map2
 #' @param InData indata list, use snow_density(runMode = "VIEW") view the variables and theirs structures
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
-#' @param runMode mode to run the function, there three mode:
-#' \itemize{
-#' \item "RUN": default, run the function like general faunction
-#' \item "VIEW": view the structures of Arguments and Output(return)
-#' \item "CHECK": chek the structure of the Arguments
-#' }
-#' @param viewGN grid nummer for "VIEW" mode.
 #' @param ... other Parmeters
 #' @return matrix, Discrete unit hydrograph
 #' @export
-makeUHALL <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
+makeUHALL <- function(InData, Param, ...){
   return(UHAll = map2(InData$IUH$UHMethond, InData$IUH$UHParam, makeUH, Param))
 }
 

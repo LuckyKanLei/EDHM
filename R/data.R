@@ -87,7 +87,41 @@
 
 
 
-
-
+#' Data_ActualET.Vic.
+#' @format list of function data(InData, Param, OutData)
+"Data_ActualET.Vic"
+#' Data_BASEFLOW.ARNO.
+#' @format list of function data(InData, Param, OutData)
+"Data_BASEFLOW.ARNO"
+#' Data_Infiltration.OIER.
+#' @format list of function data(InData, Param, OutData)
+"Data_Infiltration.OIER"
+#' Data_Infiltration.SER.
+#' @format list of function data(InData, Param, OutData)
+"Data_Infiltration.SER"
+#' Data_InfiltratRat.GreenAmpt.
+#' @format list of function data(InData, Param, OutData)
+"Data_InfiltratRat.GreenAmpt"
+#' Data_INTERCEPTION.Gash.
+#' @format list of function data(InData, Param, OutData)
+"Data_INTERCEPTION.Gash"
+#' Data_ReferenceET.Hargreaves.
+#' @format list of function data(InData, Param, OutData)
+"Data_ReferenceET.Hargreaves"
+#' Data_ReferenceET.PenMon.
+#' @format list of function data(InData, Param, OutData)
+"Data_ReferenceET.PenMon"
+#' Data_RUNOFF.OIER.
+#' @format list of function data(InData, Param, OutData)
+"Data_RUNOFF.OIER"
+#' Data_RUNOFF.SER.
+#' @format list of function data(InData, Param, OutData)
+"Data_RUNOFF.SER"
+#' Data_RUNOFF.Vic.
+#' @format list of function data(InData, Param, OutData)
+"Data_RUNOFF.Vic"
+#' Data_RUNOFF.VM.
+#' @format list of function data(InData, Param, OutData)
+"Data_RUNOFF.VM"
 
 

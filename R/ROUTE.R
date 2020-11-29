@@ -11,18 +11,11 @@ CONFLUENCE <- function(InData, ...) UseMethod("CONFLUENCE", InData)
 #' TypeGridID all of Grid type in geological matrix
 #' TransAll all of translate matrix
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
-#' @param runMode mode to run the function, there three mode:
-#' \itemize{
-#' \item "RUN": default, run the function like general faunction
-#' \item "VIEW": view the structures of Arguments and Output(return)
-#' \item "CHECK": chek the structure of the Arguments
-#' }
-#' @param viewGN grid nummer for "VIEW" mode.
 #' @param ... other Parmeters
 #' @return StationFlow Q
 #' @export CONFLUENCE.G2RES
 #' @export
-CONFLUENCE.G2RES <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
+CONFLUENCE.G2RES <- function(InData, Param, ...){
   RunoffFlowList <- InData$Confluence$WaterSource
   UHAll <- InData$IUH$UHAll
   TypeGridID <- InData$Confluence$TypeGridID
@@ -55,18 +48,11 @@ CONFLUENCE.G2RES <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
 #' WSN	IUH the number of water source
 #' GSN	IUH  the number of step from grid to station
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
-#' @param runMode mode to run the function, there three mode:
-#' \itemize{
-#' \item "RUN": default, run the function like general faunction
-#' \item "VIEW": view the structures of Arguments and Output(return)
-#' \item "CHECK": chek the structure of the Arguments
-#' }
-#' @param viewGN grid nummer for "VIEW" mode.
 #' @param ... other Parmeters
 #' @return StationFlow Q
 #' @export CONFLUENCE.WSnGSmGn
 #' @export
-CONFLUENCE.WSnGSmGn <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
+CONFLUENCE.WSnGSmGn <- function(InData, Param, ...){
   WaterSource <- InData$Confluence$WaterSource
   UHAll <- InData$IUH$UHAll
   TypeGridID <- InData$Confluence$TypeGridID
@@ -287,18 +273,11 @@ ROUTE <- function(InData, ...) UseMethod("ROUTE", InData)
 #' @title use IUH calculate flow from grid to station
 #' @param InData indata list, use snow_density(runMode = "VIEW") view the variables and theirs structures
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
-#' @param runMode mode to run the function, there three mode:
-#' \itemize{
-#' \item "RUN": default, run the function like general faunction
-#' \item "VIEW": view the structures of Arguments and Output(return)
-#' \item "CHECK": chek the structure of the Arguments
-#' }
-#' @param viewGN grid nummer for "VIEW" mode.
 #' @param ... other Parmeters
 #' @return station flow
 #' @export ROUTE.IUHG2RES
 #' @export
-ROUTE.IUHG2RES <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){
+ROUTE.IUHG2RES <- function(InData, Param, ...){
   InData$IUH$UHAll <- makeUHALL(InData, Param)
   return(CONFLUENCE.G2RES(InData, Param))
 }

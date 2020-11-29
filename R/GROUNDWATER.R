@@ -62,18 +62,11 @@ GROUNDWATER <- function(InData, ...) UseMethod("GROUNDWATER", InData)
 #' \itemize{
 #' \item paClappHornbergerB
 #' }
-#' @param runMode mode to run the function, there three mode:
-#' \itemize{
-#' \item "RUN": default, run the function like general faunction
-#' \item "VIEW": view the structures of Arguments and Output(return)
-#' \item "CHECK": chek the structure of the Arguments
-#' }
-#' @param viewGN grid nummer for "VIEW" mode.
 #' @param ... other Parmeters
 #' @return INTERCEPTION
 #' @export GROUNDWATER.VIC
 #' @export
-GROUNDWATER.VIC <- function(InData, Param, runMode = "RUN", viewGN = 3, ...){ ## Infiltration = Infiltration - Evapotranspiration
+GROUNDWATER.VIC <- function(InData, Param, ...){ ## Infiltration = Infiltration - Evapotranspiration
 
   Evapotranspiration <- InData$ET
   Interception <- InData$Intercept$Interception

@@ -24,38 +24,30 @@ calc_rainonly <- function(air_temp,
 #' @description  Determines from the air temperature what fraction of incoming
 #' precipitation is frozen and unfrozen (snow and rain).
 #' @importFrom stats runif
-#' @importFrom  HMtools mergeData deleteData viewArgum checkData putUnit
 #' @param InData indata list, use SNOWDivid(runMode = "VIEW") view the variables and theirs structures
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
 #' the other parameters depednd on the actuell model, eg. TimeStepSec, gridN.
 #' and use SNOWDivid(runMode = "VIEW") view the structure
-#' @param runMode mode to run the function, there three mode:
-#' \itemize{
-#' \item "RUN": default, run the function like general faunction
-#' \item "VIEW": view the structures of Arguments and Output(return)
-#' \item "CHECK": chek the structure of the Arguments
-#' }
-#' @param viewGN grid nummer for "VIEW" mode.
 #' @return use SNOWDivid(runMode = "VIEW") view the outputs and theirs structure
 #' @export
-PRECDivid <- function(InData, Param, runMode = "RUN", viewGN = 3) {
-  if(runMode == "VIEW" | runMode == "CHECK"){
-    fcName <- "PRECDivid"
-    MetData <- data.frame(Precipitation = runif(viewGN, 0, 90), TAir = runif(viewGN, -30, 50))
-    MetData <- putUnit(MetData, c("mm", "Cel"))
-
-    InData0 <- list(MetData = MetData)
-    Param0 <- list(SNOW_MAX_SNOW_TEMP = ParamAll$SNOW_MAX_SNOW_TEMP, SNOW_MIN_RAIN_TEMP = ParamAll$SNOW_MIN_RAIN_TEMP)
-    Arguments <- list(InData = InData0, Param = Param0)
-
-    if(runMode == "VIEW"){
-      vw <- viewArgum(fcName, Arguments)
-      return(list(Arguments = Arguments, Out = vw))
-    } else {
-      ck <- checkData(Arguments, list(InData = InData, Param = Param), "Arguments")
-      return()
-    }
-  }
+PRECDivid <- function(InData, Param) {
+  # if(runMode == "VIEW" | runMode == "CHECK"){
+  #   fcName <- "PRECDivid"
+  #   MetData <- data.frame(Precipitation = runif(viewGN, 0, 90), TAir = runif(viewGN, -30, 50))
+  #   MetData <- putUnit(MetData, c("mm", "Cel"))
+  #
+  #   InData0 <- list(MetData = MetData)
+  #   Param0 <- list(SNOW_MAX_SNOW_TEMP = ParamAll$SNOW_MAX_SNOW_TEMP, SNOW_MIN_RAIN_TEMP = ParamAll$SNOW_MIN_RAIN_TEMP)
+  #   Arguments <- list(InData = InData0, Param = Param0)
+  #
+  #   if(runMode == "VIEW"){
+  #     vw <- viewArgum(fcName, Arguments)
+  #     return(list(Arguments = Arguments, Out = vw))
+  #   } else {
+  #     ck <- checkData(Arguments, list(InData = InData, Param = Param), "Arguments")
+  #     return()
+  #   }
+  # }
 
   prec <- InData$MetData$Precipitation
   air_temp <- InData$MetData$TAir

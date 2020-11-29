@@ -4,7 +4,7 @@
 \alias{RUNOFF.VM}
 \title{VitcalMisingExcessRunoff runoff (OverInfiltrationExcessRunoff and SaturationExcessRunoff)}
 \usage{
-\method{RUNOFF}{VM}(InData, Param, runMode = "RUN", viewGN = 3, ...)
+\method{RUNOFF}{VM}(InData, Param, ...)
 }
 \arguments{
 \item{InData}{4-list of:
@@ -20,15 +20,6 @@
 \item paSoilMoistureCapacityB
 \item paInfiltrationRateB
 }}
-
-\item{runMode}{mode to run the function, there three mode:
-\itemize{
-\item "RUN": default, run the function like general faunction
-\item "VIEW": view the structures of Arguments and Output(return)
-\item "CHECK": chek the structure of the Arguments
-}}
-
-\item{viewGN}{grid nummer for "VIEW" mode.}
 
 \item{...}{other Parmeters}
 }
