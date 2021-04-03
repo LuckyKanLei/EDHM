@@ -41,6 +41,7 @@ BASEFLOW.ARNO <- function(InData, Param, ...){
   TEMDiff <- SoilMoistureVolume - SoilMoistureVolumeARNOBaseThreshold
   TEM <- TEMMin
   TEM[which(TEMDiff > 0.0)] <- TEMMax[which(TEMDiff > 0.0)]
+  # browser()
   return(list(Ground = list(BaseFlow = minVector(SoilMoistureVolume, TEM))))
 }
 

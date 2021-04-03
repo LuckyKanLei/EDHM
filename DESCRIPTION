@@ -33,7 +33,8 @@ Imports:
     hydroGOF,
     hydroTSM,
     purrr,
-    magrittr
+    magrittr,
+    methods
 Depends:
     R (>= 3.0.0)
 License: GPL-3

@@ -64,58 +64,61 @@ GROUNDWATER <- function(InData, ...) UseMethod("GROUNDWATER", InData)
 #' }
 #' @param ... other Parmeters
 #' @return INTERCEPTION
-#' @export GROUNDWATER.VIC
+#' @export GROUNDWATER.Vic
 #' @export
-GROUNDWATER.VIC <- function(InData, Param, ...){ ## Infiltration = Infiltration - Evapotranspiration
+GROUNDWATER.Vic <- function(InData, Param, ...){ ## Infiltration = Infiltration - Evapotranspiration
 
-  Evapotranspiration <- InData$ET
+  Evapotranspiration <- InData$Evatrans
   Interception <- InData$Intercept$Interception
   Infiltration <- InData$Infilt$Infiltration
   BaseFlow <- InData$Ground$BaseFlow
   GroundWaterIn <- InData$Ground
+  GroundSoil <- InData$SoilData
   # GroundWaterIn <- split(GroundWaterIn, col(GroundWaterIn))
   # names(GroundWaterIn) <- c("Volum0", "Volum1", "Volum2","Volum3")
   # GridSoilParame <- mergeData(InData$Ground, InData$SoilData)
-
+  GroundWaterIn$ZoneMoistureVolume[,1] <- GroundWaterIn$ZoneMoistureVolume[,1] -
+    Evapotranspiration$EvaporationLand + Evapotranspiration$Transpiration
+  GroundWaterIn$ZoneMoistureVolume[,3] <- GroundWaterIn$ZoneMoistureVolume[,3] - BaseFlow
   paClappHornbergerB <- Param$ClappHornbergerB
-
+  Zone_Moisture_content <- as.data.frame(GroundWaterIn$ZoneMoistureVolume) / GroundWaterIn$ZoneDepth
   Infiltration0 <- Infiltration
-  HydraulicConductivity1_2 <- fctHydraulicConductivity(GroundWaterIn$ZoneMoistureVolume[,1] / GroundWaterIn$ZoneDepth[,1],
-                                                       GroundWaterIn$Porosity,
-                                                       GroundWaterIn$SaturatedHydraulicConductivity,
-                                                       paClappHornbergerB)
-  HydraulicConductivity2_3 <- fctHydraulicConductivity(GroundWaterIn$ZoneMoistureVolume[,2] / GroundWaterIn$ZoneDepth[,2],
-                                                       GroundWaterIn$Porosity,
-                                                       GroundWaterIn$SaturatedHydraulicConductivity,
-                                                       paClappHornbergerB)
-  HydraulicDiffusivity1_2 <- fctHydraulicDiffusivity(GroundWaterIn$ZoneMoistureVolume[,1] / GroundWaterIn$ZoneDepth[,1],
-                                                     GroundWaterIn$SaturatedSoilSuctionHead,
-                                                     GroundWaterIn$Porosity,
-                                                     GroundWaterIn$SaturatedHydraulicConductivity,
-                                                     paClappHornbergerB)  # Unit ist depth: mm ##must translate to a time phase
-  HydraulicDiffusivity2_3 <- fctHydraulicDiffusivity(GroundWaterIn$ZoneMoistureVolume[,2] / GroundWaterIn$ZoneDepth[,2],
-                                                     GroundWaterIn$SaturatedSoilSuctionHead,
-                                                     GroundWaterIn$Porosity,
-                                                     GroundWaterIn$SaturatedHydraulicConductivity,
-                                                     paClappHornbergerB)  # Unit ist depth: mm ##must translate to a time phase
-  InterFlowFlux1 <- HydraulicConductivity1_2 + HydraulicDiffusivity1_2
-  InterFlowFlux2 <- HydraulicConductivity2_3 + HydraulicDiffusivity2_3
-  InterFlowFlux1[is.na(InterFlowFlux1)] = 0.0
-  InterFlowFlux2[is.na(InterFlowFlux2)] = 0.0
-  InterFlowFlux1 <- minVector(InterFlowFlux1, GroundWaterIn$ZoneMoistureVolume[,1])
-  InterFlowFlux2 <- minVector(InterFlowFlux2, GroundWaterIn$ZoneMoistureVolume[,2])
-  # GroundWaterOut <- GroundWaterIn
+  HydraulicConductivity1_2 <- fctHydraulicConductivity(Zone_Moisture_content[,1],
+                                                       GroundSoil$Porosity,
+                                                       GroundSoil$SaturatedConductivity,
+                                                       paClappHornbergerB) / 86400 * Param$TimeStepSec * Param$Coeff_Conductivity
+  HydraulicConductivity2_3 <- fctHydraulicConductivity(Zone_Moisture_content[,2],
+                                                       GroundSoil$Porosity,
+                                                       GroundSoil$SaturatedConductivity,
+                                                       paClappHornbergerB) / 86400 * Param$TimeStepSec * Param$Coeff_Conductivity
+  # HydraulicDiffusivity1_2 <- fctHydraulicDiffusivity(GroundWaterIn$ZoneMoistureVolume[,1] / GroundWaterIn$ZoneDepth[,1],
+  #                                                    GroundSoil$SaturatedSoilSuctionHead,
+  #                                                    GroundSoil$Porosity,
+  #                                                    GroundSoil$SaturatedConductivity,
+  #                                                    paClappHornbergerB)  # Unit ist depth: mm ##must translate to a time phase
+  # HydraulicDiffusivity2_3 <- fctHydraulicDiffusivity(GroundWaterIn$ZoneMoistureVolume[,2] / GroundWaterIn$ZoneDepth[,2],
+  #                                                    GroundSoil$SaturatedSoilSuctionHead,
+  #                                                    GroundSoil$Porosity,
+  #                                                    GroundSoil$SaturatedConductivity,
+  #                                                    paClappHornbergerB)  # Unit ist depth: mm ##must translate to a time phase
+  # InterFlowFlux1 <- HydraulicConductivity1_2 + HydraulicDiffusivity1_2
+  # InterFlowFlux2 <- HydraulicConductivity2_3 + HydraulicDiffusivity2_3
+  InterFlowFlux1 = maxSVector(0, HydraulicConductivity1_2 * (Zone_Moisture_content[,1] - Zone_Moisture_content[,2]) / GroundWaterIn$ZoneDepth[,1])
+  InterFlowFlux2 = maxSVector(0, HydraulicConductivity2_3 * (Zone_Moisture_content[,2] - Zone_Moisture_content[,3]) / GroundWaterIn$ZoneDepth[,2])
+  InterFlowFlux1 <- minVector(InterFlowFlux1, GroundWaterIn$ZoneMoistureVolume[,1] + Infiltration0)
+  InterFlowFlux2 <- minVector(InterFlowFlux2, GroundWaterIn$ZoneMoistureVolume[,2] + InterFlowFlux1)
+  Max_InterFlowFlux2 <- GroundWaterIn$ZoneMoistureCapacityMax[,3] - GroundWaterIn$ZoneMoistureVolume[,3]
+  InterFlowFlux2 <- minVector(InterFlowFlux2, Max_InterFlowFlux2)
   GroundWaterOut <- list()
   GroundWaterOut$ZoneMoistureVolume <- GroundWaterIn$ZoneMoistureVolume
   # GroundWaterOut$Volum0 <- maxSVector(0.0, GroundWaterIn$Volum0 + as.matrix(Interception) -
   #                                      as.matrix(Evapotranspiration$EvapC))
-  GroundWaterOut$ZoneMoistureVolume[,1] <- maxSVector(0.0, GroundWaterIn$ZoneMoistureVolume[,1] -
-                                                        as.matrix(Evapotranspiration$EvaporationLand + Evapotranspiration$Transpiration) +
-                                                        Infiltration0 - InterFlowFlux1)
-  GroundWaterOut$ZoneMoistureVolume[,2] <- maxSVector(0.0, GroundWaterIn$ZoneMoistureVolume[,2] + InterFlowFlux1 - InterFlowFlux2)
-  GroundWaterOut$ZoneMoistureVolume[,3] <- maxSVector(0.0, GroundWaterIn$ZoneMoistureVolume[,3] + InterFlowFlux2 - BaseFlow)
-  GroundWaterOut[is.na(GroundWaterOut)] <- 0.0
-
+  GroundWaterOut$ZoneMoistureVolume[,1] <- minVector(GroundWaterIn$ZoneMoistureCapacityMax[,1], GroundWaterIn$ZoneMoistureVolume[,1] + Infiltration0 - InterFlowFlux1)
+  GroundWaterOut$ZoneMoistureVolume[,2] <- minVector(GroundWaterIn$ZoneMoistureCapacityMax[,2], GroundWaterIn$ZoneMoistureVolume[,2] + InterFlowFlux1 - InterFlowFlux2)
+  GroundWaterOut$ZoneMoistureVolume[,3] <- minVector(GroundWaterIn$ZoneMoistureCapacityMax[,3], GroundWaterIn$ZoneMoistureVolume[,3] + InterFlowFlux2)
+  GroundWaterOut$Overflow <- maxSVector(0, GroundWaterIn$ZoneMoistureVolume[,1] + Infiltration0 - InterFlowFlux1 - GroundWaterIn$ZoneMoistureCapacityMax[,1])+
+    maxSVector(0, GroundWaterIn$ZoneMoistureVolume[,2] + InterFlowFlux1 - InterFlowFlux2 - GroundWaterIn$ZoneMoistureCapacityMax[,2])+
+    maxSVector(0, GroundWaterIn$ZoneMoistureVolume[,3] + InterFlowFlux2 - GroundWaterIn$ZoneMoistureCapacityMax[,3])
   return(list(Ground = GroundWaterOut))
 }
 

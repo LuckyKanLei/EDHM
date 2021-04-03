@@ -49,10 +49,10 @@ PRECDivid <- function(InData, Param) {
   #   }
   # }
 
-  prec <- InData$MetData$Precipitation
+  prec <- InData$Prec$Precipitation
   air_temp <- InData$MetData$TAir
-  MAX_SNOW_TEMP <- Param$SNOW_MAX_SNOW_TEMP
-  MIN_RAIN_TEMP <- Param$SNOW_MIN_RAIN_TEMP
+  MAX_SNOW_TEMP <- Param$Max_Snow_T
+  MIN_RAIN_TEMP <- Param$Min_Snow_T
   #### Calculate Fraction of Precipitation that falls as Rain ####
   rainonly <- calc_rainonly(air_temp, prec, MAX_SNOW_TEMP, MIN_RAIN_TEMP)
   snowfall <- prec - rainonly

@@ -21,15 +21,16 @@ InfiltratRat <- function(InData, ...) UseMethod("InfiltratRat", InData)
 #' @export InfiltratRat.GreenAmpt
 #' @export
 InfiltratRat.GreenAmpt <- function(InData, Param, ...){
-  HydraulicConductivity <- InData$Ground$Conductivity
-  WettingFrontSoilSuction <- InData$Ground$WettingFrontSuction
-  EffectivePorosity <- InData$Ground$Porosity
+  HydraulicConductivity <- InData$SoilData$Conductivity
+  WettingFrontSoilSuction <- InData$SoilData$WettingFrontSuction
+  EffectivePorosity <- InData$SoilData$Porosity
   SoilMoistureVolume <- InData$Ground$MoistureVolume
   SoilMoistureContent <- SoilMoistureVolume / InData$Ground$Depth
 
   InfiltrationRat <- HydraulicConductivity *
     (1 + WettingFrontSoilSuction * (EffectivePorosity - SoilMoistureContent) / SoilMoistureVolume)
-  return(list(Infilt = data.frame(InfiltrationRat = maxSVector(0.0, InfiltrationRat))))  ## P > Ks
+  # browser()
+  return(list(Infilt = list(InfiltrationRat = as.array(maxSVector(0.0, minSVector(9999.0, InfiltrationRat)), dim = 1))))  ## P > Ks
 }
 
 
@@ -85,7 +86,7 @@ Infiltration <- function(InData, ...) UseMethod("Infiltration", InData)
 #' @export Infiltration.SER
 #' @export
 Infiltration.SER <- function(InData, Param, ...){
-  PrecipitationHoch <- InData$Prec$Precipitation
+  PrecipitationHoch <- InData$Prec$RainFall
   SoilMoistureCapacityMax <- InData$Ground$MoistureCapacityMax
   SoilMoistureCapacity <- InData$Ground$MoistureCapacity
 
@@ -119,7 +120,7 @@ Infiltration.SER <- function(InData, Param, ...){
 #' @export Infiltration.OIER
 #' @export
 Infiltration.OIER <- function(InData, Param, ...){
-  PrecipitationHoch <- InData$Prec$Precipitation
+  PrecipitationHoch <- InData$Prec$RainFall
   InfiltrationRateMax <- InData$Infilt$InfiltrationRat
 
   paInfiltrationRateB <- Param$InfiltrationRateB
@@ -165,7 +166,7 @@ RUNOFF <- function(InData, ...) UseMethod("RUNOFF", InData)
 #' @export RUNOFF.SER
 #' @export
 RUNOFF.SER <- function(InData, Param, ...){
-  PrecipitationHoch <- InData$Prec$Precipitation
+  PrecipitationHoch <- InData$Prec$RainFall
   SoilMoistureCapacityMax <- InData$Ground$MoistureCapacityMax
   SoilMoistureVolum <- InData$Ground$MoistureVolume
 
@@ -198,7 +199,7 @@ RUNOFF.SER <- function(InData, Param, ...){
 #' @export RUNOFF.OIER
 #' @export
 RUNOFF.OIER <- function(InData, Param, ...){
-  PrecipitationHoch <- InData$Prec$Precipitation
+  PrecipitationHoch <- InData$Prec$RainFall
   InfiltrationRateMax <- InData$Infilt$InfiltrationRateMax
   class(InData) <- "OIER"
   SoilInfiltrationOIER <- Infiltration(InData, Param)
@@ -222,14 +223,14 @@ RUNOFF.OIER <- function(InData, Param, ...){
 fctVICRateFind <- function(rate, PrecipitationHoch,
                            SoilMoistureCapacityMax, SoilMoistureCapacity,
                            InfiltrationRateMax, Param){
-  SoilInfiltrationSER <- (Infiltration.SER(list(Prec = list(Precipitation = rate * PrecipitationHoch),
+  SoilInfiltrationSER <- (Infiltration.SER(list(Prec = list(RainFall = rate * PrecipitationHoch),
                                                 Ground = list(MoistureCapacityMax = SoilMoistureCapacityMax,
                                                               MoistureCapacity = SoilMoistureCapacity)),
                                            Param))$Infilt$Infiltration
   Pr_RunoffSER <- rate * PrecipitationHoch - SoilInfiltrationSER
   SaturatedArea <- fctSaturatedArea(SoilMoistureCapacity + rate * PrecipitationHoch,
                                     SoilMoistureCapacityMax, Param$SoilMoistureCapacityB)
-  SoilInfiltrationOIER <- (Infiltration.OIER(list(Prec = list(Precipitation = PrecipitationHoch - Pr_RunoffSER),
+  SoilInfiltrationOIER <- (Infiltration.OIER(list(Prec = list(RainFall = PrecipitationHoch - Pr_RunoffSER),
                                                   Infilt = list(InfiltrationRat = InfiltrationRateMax)),
                                              Param))$Infilt$Infiltration
   Pr_RunoffOIER <- PrecipitationHoch - Pr_RunoffSER - SoilInfiltrationOIER
@@ -262,14 +263,14 @@ fctVICRateFind <- function(rate, PrecipitationHoch,
 #' @export RUNOFF.Vic
 #' @export
 RUNOFF.Vic <- function(InData, Param, ...){
-  PrecipitationHoch <- InData$Prec$Precipitation
+  PrecipitationHoch <- InData$Prec$RainFall
   SoilMoistureCapacityMax <- InData$Ground$MoistureCapacityMax
   SoilMoistureVolume <- InData$Ground$MoistureVolume
-  InfiltrationRateMax <- InData$Infilt$InfiltrationRat
+  InfiltrationRateMax <- minVector(InData$Infilt$InfiltrationRat, SoilMoistureCapacityMax)
 
   paSoilMoistureCapacityB <- Param$SoilMoistureCapacityB
   paInfiltrationRateB <- Param$InfiltrationRateB
-
+# browser()
   SoilMoistureCapacity <- fctMoistureCapacity(SoilMoistureVolume,
                                               SoilMoistureCapacityMax,
                                               paSoilMoistureCapacityB)
@@ -288,18 +289,18 @@ RUNOFF.Vic <- function(InData, Param, ...){
                                  SoilMoistureCapacity = SoilMoistureCapacity[i],
                                  InfiltrationRateMax = InfiltrationRateMax[i],
                                  Param = Param)
-      SoilInfiltrationVICSER[i] <- (Infiltration.SER(list(Prec = list(Precipitation = RatSER[i] * PrecipitationHoch[i]),
+      SoilInfiltrationVICSER[i] <- (Infiltration.SER(list(Prec = list(RainFall = RatSER[i] * PrecipitationHoch[i]),
                                                           Ground = list(MoistureCapacityMax = SoilMoistureCapacityMax[i],
                                                                         MoistureCapacity = SoilMoistureCapacity[i])),
                                                      Param))$Infilt$Infiltration
-      SoilInfiltrationVICOIER[i] <- (Infiltration.OIER(list(Prec = list(Precipitation = (1 - RatSER[i]) * PrecipitationHoch[i]),
+      SoilInfiltrationVICOIER[i] <- (Infiltration.OIER(list(Prec = list(RainFall = (1 - RatSER[i]) * PrecipitationHoch[i]),
                                                             Infilt = list(InfiltrationRat = InfiltrationRateMax[i])),
                                                        Param))$Infilt$Infiltration
       SoilInfiltrationVIC[i] <- SoilInfiltrationVICSER[i] + SoilInfiltrationVICOIER[i]
       RunoffVIC[i] <- PrecipitationHoch[i] - SoilInfiltrationVIC[i]
     }
   }
-  SoilInfiltrationVIC[is.na(SoilInfiltrationVIC)] = (Infiltration.SER(list(Prec = list(Precipitation = PrecipitationHoch),
+  SoilInfiltrationVIC[is.na(SoilInfiltrationVIC)] = (Infiltration.SER(list(Prec = list(RainFall = PrecipitationHoch),
                                                                            Ground = list(MoistureCapacityMax = SoilMoistureCapacityMax,
                                                                                          MoistureCapacity = SoilMoistureCapacity)),
                                                                       Param))$Infilt$Infiltration[is.na(SoilInfiltrationVIC)]
@@ -333,7 +334,7 @@ RUNOFF.Vic <- function(InData, Param, ...){
 #' @export RUNOFF.VM
 #' @export
 RUNOFF.VM <- function(InData, Param, ...){
-  PrecipitationHoch <- InData$Prec$Precipitation
+  PrecipitationHoch <- InData$Prec$RainFall
   SoilMoistureCapacity <- InData$Ground$MoistureCapacity
   SoilMoistureCapacityMax <- InData$Ground$MoistureCapacityMax
   InfiltrationRateMax <- InData$Infilt$InfiltrationRateMax

@@ -29,9 +29,9 @@ ReferenceET.PenMon <- function(InData, Param, ...){
   JDay <- InData$TimeData$NDay
   Elevation <- InData$GeoData$Elevation
   Latitude <- InData$GeoData$Latitude
-  Tmax <- InData$MetData$Tmax
-  Tmin <- InData$MetData$Tmin
-  Tmean <- InData$MetData$Tmean
+  Tmax <- InData$MetData$TMax
+  Tmin <- InData$MetData$TMin
+  Tmean <- InData$MetData$TAir
   WindSpeed <- InData$MetData$WindSpeed
   WindH <- InData$MetData$WindH
   SunHour <- InData$MetData$SunHour
@@ -162,7 +162,7 @@ ActualET <- function(InData, ...) UseMethod("ActualET", InData)
 #' @export
 ActualET.Vic <- function(InData, Param, ...){
   RET <- InData$Evatrans$RET
-  PrecipitationHoch <- InData$Prec$Precipitation
+  # PrecipitationHoch <- InData$Prec$Precipitation
 
   MoistureVolume <- InData$Intercept$Interception
 
@@ -174,31 +174,32 @@ ActualET.Vic <- function(InData, Param, ...){
   AerodynamicResistance <- InData$Aerodyna$AerodynaResist
   ArchitecturalResistance <- InData$Aerodyna$ArchitecturalResist
   StomatalResistance <- InData$Aerodyna$StomatalResist
-
+# browser()
   paSoilMoistureCapacityB <- Param$SoilMoistureCapacityB
   EvaporationCnopyMax <- (MoistureVolume / MoistureCapacityMax)^0.6667 *
     (AerodynamicResistance / (AerodynamicResistance + ArchitecturalResistance)) * RET
-  Rate <- minSVector(1, (MoistureVolume + PrecipitationHoch) / (EvaporationCnopyMax + DBL_EPSILON))
+  Rate <- minSVector(1, MoistureVolume / (EvaporationCnopyMax + DBL_EPSILON))
   Rate <- maxSVector(0.0,minSVector(1.0,Rate))
-  EvaporationCanopy <- minVector(PrecipitationHoch, Rate * EvaporationCnopyMax)
-  Rate1 <- minSVector(1, (MoistureVolume1 + PrecipitationHoch) / (MoistureCapacityMax1 + DBL_EPSILON))
+  EvaporationCanopy <- Rate * EvaporationCnopyMax
+  Rate1 <- minSVector(1, MoistureVolume1 / (MoistureCapacityMax1 + DBL_EPSILON))
   Rate2 <- AerodynamicResistance /
     ( AerodynamicResistance + ArchitecturalResistance + StomatalResistance)
   Rate1 <- maxSVector(0.0,minSVector(1.0,Rate1))
   Rate2 <- maxSVector(0.0,minSVector(1.0,Rate2))
   Transpiration <- ((1.0 - Rate1) * Rate2 + Rate1 * Rate2 *
-                      (1 - (MoistureVolume1 / MoistureCapacityMax1)^0.667)) * RET
+                      (1 - (minSVector(1, MoistureVolume1 / MoistureCapacityMax1))^0.667)) * RET
   Transpiration[is.na(Transpiration)] <- 0.0
-  Transpiration <- minVector(MoistureVolume1, Transpiration)
   MoistureCapacity <- fctMoistureCapacity(MoistureVolume1,
                                           MoistureCapacityMax1 * (paSoilMoistureCapacityB + 1),
                                           paSoilMoistureCapacityB)
-  SaturatedArea <- fctSaturatedArea(MoistureCapacity,
+  SaturatedArea <- fctSaturatedArea(MoistureCapacity - DBL_EPSILON,
                                     MoistureCapacityMax1 * (paSoilMoistureCapacityB + 1),
                                     paSoilMoistureCapacityB)
-  Rate3 <- maxSVector(0.0,minSVector(1.0,SaturatedArea + (1 - SaturatedArea) * 0.3))
+  Rate3 <- maxSVector(0.0, minSVector(1.0, SaturatedArea + (1 - SaturatedArea) * 0.3))
+  # browser()
   EvaporationSoil <- Rate3 * RET
-  EvaporationSoil <- minVector(MoistureVolume1 - Transpiration,EvaporationSoil)
+  EvaporationSoil <- minVector(MoistureVolume1, EvaporationSoil)
+  Transpiration <- minVector(MoistureVolume1 - EvaporationSoil, Transpiration)
   return(list(Evatrans = list(EvaporationCanopy = EvaporationCanopy, Transpiration = Transpiration, EvaporationLand = EvaporationSoil)))
 }
 

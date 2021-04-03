@@ -17,7 +17,7 @@ CONFLUENCE <- function(InData, ...) UseMethod("CONFLUENCE", InData)
 #' @export
 CONFLUENCE.G2RES <- function(InData, Param, ...){
   RunoffFlowList <- InData$Confluence$WaterSource
-  UHAll <- InData$IUH$UHAll
+  UHAll <- InData$Confluence$UHAll
   TypeGridID <- InData$Confluence$TypeGridID
   TransAll <- InData$Confluence$TransAll
 
@@ -126,7 +126,7 @@ fctUHConfluence <- function(Flow, UH){
 #' @export
 fctMakeGridTranslateMatrix <- function(Grid2AimGrid, AimID){
   GridN <- dim(Grid2AimGrid)[1]
-  AimGridN <- dim(AimID)[1]
+  AimGridN <- length(AimID)
   TranslateMatrix <- matrix(0.0, GridN, AimGridN)
   for(k in 1:GridN) {
     TranslateMatrix[k, match(Grid2AimGrid[k,2],as.matrix(AimID))] = 1
@@ -143,47 +143,48 @@ fctMakeGridTranslateMatrix <- function(Grid2AimGrid, AimID){
 #' @return vector of fluss
 #' @export
 fctGrid2AimGridFind <- function(l,m, AimGridID, GridID, FlowDirection){
+  Dir_Code <- attr(FlowDirection, "Dir_Code")
   n = 0
   j = l
   k = m
   while(!is.na(GridID[j,k])){
     f = FlowDirection[j,k]
-    if(f == 1) {
+    if(f == Dir_Code[1]) {
       j = j-1
       k = k
       n = n+1
     }
-    if(f==2) {
+    if(f == Dir_Code[2]) {
       j = j-1
       k = k+1
       n = n+1.42
     }
-    if(f == 3) {
+    if(f == Dir_Code[3]) {
       k = k+1
       j = j
       n = n+1
     }
-    if(f == 4) {
+    if(f == Dir_Code[4]) {
       j = j+1
       k = k+1
       n = n+1.42
     }
-    if(f == 5) {
+    if(f == Dir_Code[5]) {
       j = j+1
       k = k
       n = n+1
     }
-    if(f == 6) {
+    if(f == Dir_Code[6]) {
       j = j+1
       k = k-1
       n = n+1.42
     }
-    if(f == 7) {
+    if(f == Dir_Code[7]) {
       k = k-1
       j = j
       n = n+1
     }
-    if(f == 8) {
+    if(f == Dir_Code[8]) {
       j = j-1
       k = k-1
       n = n+1.42
@@ -215,7 +216,7 @@ fctGrid2AimGridFind <- function(l,m, AimGridID, GridID, FlowDirection){
 #' }
 #' @export
 fctGrid2AimGrid <- function(OriginalGridID, AimGridID, GridID, FlowDirection, GridDEM){
-  Grid2AimGrid <- matrix(0, dim(OriginalGridID)[1] - dim(AimGridID)[1], 4)
+  Grid2AimGrid <- matrix(0, length(OriginalGridID) - length(AimGridID), 4)
   infoGridRowN <- attr(GridID, "nrows")  #the rows number of FLOWDRIC
   infoGridColN <- attr(GridID, "ncols")   #the clows number of FLOWDRIC
 
@@ -278,8 +279,7 @@ ROUTE <- function(InData, ...) UseMethod("ROUTE", InData)
 #' @export ROUTE.IUHG2RES
 #' @export
 ROUTE.IUHG2RES <- function(InData, Param, ...){
-  InData$IUH$UHAll <- makeUHALL(InData, Param)
+  InData$Confluence$UHAll <- makeUHALL(InData, Param)
   return(CONFLUENCE.G2RES(InData, Param))
 }
-
 

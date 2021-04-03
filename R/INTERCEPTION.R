@@ -25,7 +25,7 @@ INTERCEPTION <- function(InData, ...) UseMethod("INTERCEPTION", InData)
 INTERCEPTION.Gash <- function(InData, Param, ...){
   CanopyStorageCapacity <- InData$Canopy$StorageCapacity - InData$Intercept$Interception
   RainfallDuringSaturation <- InData$Prec$Precipitation
-  Evaporation <- InData$ET$EvaporationCanopy
+  Evaporation <- InData$Evatrans$EvaporationCanopy
 
   paCoefficientFreeThroughfall <- Param$CoefficientFreeThroughfall
 
@@ -34,7 +34,7 @@ INTERCEPTION.Gash <- function(InData, Param, ...){
     log(1 - Evaporation / (RainfallDuringSaturation *
                              (1 - paCoefficientFreeThroughfall) + DBL_EPSILON))
   returnTem <- minVector(RainfallDuringSaturation,
-                         minVector(CanopyStorageCapacity, NecessaryToSaturateCanopy))
+                         maxVector(CanopyStorageCapacity, NecessaryToSaturateCanopy))
   returnTem[is.na(returnTem)] <- 0.0
   return(list(Intercept = list(Interception = InData$Intercept$Interception + returnTem - Evaporation),
               Prec = list(Precipitation = RainfallDuringSaturation - returnTem)))
