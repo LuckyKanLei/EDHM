@@ -119,17 +119,32 @@ ReferenceET.Hargreaves <- function(InData, Param, ...){
   return(list(Evatrans = data.frame(RET = RET)))
 }
 
-#' AerodynamicResistance paramter caculate
-#' @param VegetationDisplacementHeight Vegetation Displacement Height
-#' @param VegetationRoughLength Vegetation Rough Length
-#' @param WindSpeed Wind Speed
-#' @return AerodynamicResistance
+#' ReferenceET with PenmanMonteith methond
+#' @references  Linacre ET. 1977. A simple formula for estimating evaporation rates in various climates, using temperature data alone. AgriculturalMeteorology 18: 409-424.
+#' @param InData list of:
+#' \itemize{
+#' \item Elevation, m
+#' \item Latitude
+#' \item Tmean, oC, Celius
+#' \item Actual_vapor_press,
+#' }
+#' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
+#' @param ... other Parmeters
+#' @return Reference ET with PenmanMonteith methond
+#' @export ReferenceET.Linacre
 #' @export
-fctAerodynamicResistance <- function(VegetationDisplacementHeight, VegetationRoughLength, WindSpeed){
-  AerodynamicResistance <- 4.72 * (log(VegetationDisplacementHeight / VegetationRoughLength))^2 /
-    (1 + 0.54 * WindSpeed)
-  return(AerodynamicResistance)
+ReferenceET.Linacre <- function(InData, Param, ...) {
+  Elevation <- InData$GeoData$Elevation
+  Latitude <- InData$GeoData$Latitude
+  Ta <- InData$MetData$TAir ## (data$Tmax + data$Tmin) / 2
+  Tdew <- get_Dew_point(InData$MetData$Actual_vapor_press)
+  T_m <- Ta + 0.006 * Elevation
+  ET_Linacre <- (500 * T_m /(100 - Latitude)+15*(Ta - Tdew))/(80 - Ta)
+  return(list(Evatrans = list(RET = ET_Linacre)))
 }
+
+
+
 #' Actual evapotranspiration
 #' @param InData indata list, use SNOWIntercept(runMode = "VIEW") view the variables and theirs structures
 #' @param ... paramlist, in this R packege ParamAll dataset there are alredy most parameters,
