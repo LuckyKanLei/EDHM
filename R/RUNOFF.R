@@ -354,6 +354,43 @@ RUNOFF.VM <- function(InData, Param, ...){
 }
 
 
+#' VIC runoff (OverInfiltrationExcessRunoff and SaturationExcessRunoff)
+#' @references https://webgr.inrae.fr/en/models/daily-hydrological-model-gr4j/description-of-the-gr4j-model/
+#' @references Perrin, C., Michel, C. and Andréassian, V., 2003. Improvement of a parsimonious model for streamflow simulation. Journal of Hydrology, 279 : 275-289, DOI: 10.1016/S0022-1694(03)00225-7
+#' @import HMtools
+#' @param InData 4-list of:
+#' \itemize{
+#' \item PrecipitationHoch
+#' \item SoilMoistureVolume
+#' \item AET
+#' }
+#' @param Param 2-list of:
+#' \itemize{
+#' \item Gr4j_X1
+#' }
+#' @param ... other Parmeters
+#' @return 2-list of:
+#' \itemize{
+#' \item Runoff
+#' \item MoistureVolume
+#' }
+#' @export RUNOFF.Gr4j
+#' @export
+RUNOFF.Gr4j <- function(InData, Param, ...){
+  X1 <- Param$Gr4j_X1
+
+  Pn <- InData$Prec$Precipitation
+  Es <- InData$Evatrans$AET
+  S <- InData$Ground$MoistureVolume
+
+  Ps <- X1 * (1- (S / X1) * (S / X1)) * tanh(Pn / X1) / (1 + S / X1 * tanh(Pn / X1))
+  S <- S - Es + Ps
+  Perc <- S * (1 - (1+ (4/9 * S / X1)^4)^(-0.25))
+  S <- S - Perc
+  Pr <- Perc + (Pn - Ps)
+  return(list(Ground = list(Runoff = Pr, MoistureVolume = S)))
+
+}
 
 
 

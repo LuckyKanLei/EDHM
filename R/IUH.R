@@ -118,5 +118,39 @@ makeUHALL <- function(InData, Param, ...){
   return(UHAll = map2(InData$Confluence$UHMethond, InData$Confluence$UHParam, makeUH, Param))
 }
 
+gr4j_SH1 <- function(t, X4){
+  return(minSVector(1, (t / X4)^2.5))
+}
+gr4j_SH2 <- function(t, X4){
+  judge_t1 <- t < X4
+  judge_t3 <- t > (2 * X4)
+  S1 <- 0.5 * ((t / X4)^2.5)
+  S2 <- 1 - 0.5 * (2 - t / X4)^2.5
+  S2[is.na(S2)] <- 0
+  return(judge_t1 * S1 + (!(judge_t1 | judge_t3)) * S2 + judge_t3)
+}
+
+#' UH1 for RG4J
+#' @references https://webgr.inrae.fr/en/models/daily-hydrological-model-gr4j/description-of-the-gr4j-model/
+#' @references Perrin, C., Michel, C. and Andréassian, V., 2003. Improvement of a parsimonious model for streamflow simulation. Journal of Hydrology, 279 : 275-289, DOI: 10.1016/S0022-1694(03)00225-7
+#' @param X4 parameter X4
+#' @return Instantaneous unit hydrograph
+#' @export
+gr4j_UH1 <- function(X4){
+  UH_n <- ceiling(X4) + 1
+  j <- 1:UH_n
+  return(t(as.matrix(gr4j_SH1(j, X4) - gr4j_SH1(j - 1, X4))))
+}
+#' UH2 for RG4J
+#' @references https://webgr.inrae.fr/en/models/daily-hydrological-model-gr4j/description-of-the-gr4j-model/
+#' @references Perrin, C., Michel, C. and Andréassian, V., 2003. Improvement of a parsimonious model for streamflow simulation. Journal of Hydrology, 279 : 275-289, DOI: 10.1016/S0022-1694(03)00225-7
+#' @param X4 parameter X4
+#' @return Instantaneous unit hydrograph
+#' @export
+gr4j_UH2 <- function(X4){
+  UH_n <- ceiling(2 * X4) + 1
+  j <- 1:UH_n
+  return(t(as.matrix(gr4j_SH2(j, X4) - gr4j_SH2(j - 1, X4))))
+}
 
 

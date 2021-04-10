@@ -189,7 +189,7 @@ ActualET.Vic <- function(InData, Param, ...){
   AerodynamicResistance <- InData$Aerodyna$AerodynaResist
   ArchitecturalResistance <- InData$Aerodyna$ArchitecturalResist
   StomatalResistance <- InData$Aerodyna$StomatalResist
-# browser()
+
   paSoilMoistureCapacityB <- Param$SoilMoistureCapacityB
   EvaporationCnopyMax <- (MoistureVolume / MoistureCapacityMax)^0.6667 *
     (AerodynamicResistance / (AerodynamicResistance + ArchitecturalResistance)) * RET
@@ -216,6 +216,36 @@ ActualET.Vic <- function(InData, Param, ...){
   EvaporationSoil <- minVector(MoistureVolume1, EvaporationSoil)
   Transpiration <- minVector(MoistureVolume1 - EvaporationSoil, Transpiration)
   return(list(Evatrans = list(EvaporationCanopy = EvaporationCanopy, Transpiration = Transpiration, EvaporationLand = EvaporationSoil)))
+}
+
+#' Actual evapotranspiration in GR4J
+#' @references https://webgr.inrae.fr/en/models/daily-hydrological-model-gr4j/description-of-the-gr4j-model/
+#' @references Perrin, C., Michel, C. and Andréassian, V., 2003. Improvement of a parsimonious model for streamflow simulation. Journal of Hydrology, 279 : 275-289, DOI: 10.1016/S0022-1694(03)00225-7
+#' @import HMtools
+#' @param InData 9-list of:
+#' \itemize{
+#' \item ReferenceEvap,
+#' \item PrecipitationHoch,
+#' \item MoistureVolume,
+#' }
+#' @param Param 1-list of:
+#' \itemize{
+#' \item Gr4j_X1
+#' }
+#' @param ... other Parmeters
+#' @return Actual evapotranspiration
+#' @export ActualET.Gr4j
+#' @export
+ActualET.Gr4j <- function(InData, Param, ...){
+  X1 <- Param$Gr4j_X1
+  E <- InData$Evatrans$RET
+  S <- InData$Ground$MoistureVolume
+  P <- InData$Prec$Precipitation
+  judge_PbE <- P > E
+  Pn <- judge_PbE * (P - E)
+  En <- (!judge_PbE) * (E - P)
+  Es <- S * (2 - S / X1) * tanh(En / X1) / (1 + (1 - S / X1) * tanh(En / X1))
+  return(list(Evatrans = list(AET = Es), Prec = list(Precipitation = Pn)))
 }
 
 

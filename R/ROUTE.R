@@ -283,3 +283,49 @@ ROUTE.IUHG2RES <- function(InData, Param, ...){
   return(CONFLUENCE.G2RES(InData, Param))
 }
 
+
+
+#' @title route from GR4J
+#' @references https://webgr.inrae.fr/en/models/daily-hydrological-model-gr4j/description-of-the-gr4j-model/
+#' @references Perrin, C., Michel, C. and Andréassian, V., 2003. Improvement of a parsimonious model for streamflow simulation. Journal of Hydrology, 279 : 275-289, DOI: 10.1016/S0022-1694(03)00225-7
+#' @param InData indata list, use snow_density(runMode = "VIEW") view the variables and theirs structures
+#' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
+#' @param ... other Parmeters
+#' @return station flow
+#' @export ROUTE.Gr4j
+#' @export
+ROUTE.Gr4j <- function(InData, Param, ...){
+  X2 <- Param$Gr4j_X2
+  X3 <- Param$Gr4j_X3
+  X4 <- Param$Gr4j_X4
+  time_step_i <- Param$time_step_i
+  UH1_ <- Param$Gr4j_UH1
+  UH2_ <- Param$Gr4j_UH2
+
+  UH1_n <- ceiling(X4)
+  UH2_n <- ceiling(2 * X4)
+  if(time_step_i < (UH2_n + 1)) {
+    UH1_ <- c(UH1_, UH1_ * 0)
+    UH1_ <- UH1_[1:time_step_i,]
+    UH2_ <- UH2_[1:time_step_i,]
+    Q9_ori <- 0.9 * InData$Route$WaterSource[(time_step_i) : 1,]
+    Q1_ori <- 0.1 * InData$Route$WaterSource[(time_step_i) : 1,]
+    Q9 <- sum(UH1_ * Q9_ori)
+    Q1 <- sum(UH2_ * Q1_ori)
+
+  } else {
+    Q9_ori <- 0.9 * InData$Route$WaterSource[(time_step_i) : (time_step_i - UH1_n),]
+    Q1_ori <- 0.1 * InData$Route$WaterSource[(time_step_i) : (time_step_i - UH2_n),]
+    browser()
+    Q9 <- sum(UH1_ * Q9_ori)
+    Q1 <- sum(UH2_ * Q1_ori)
+  }
+  R_ <- InData$Route$Store
+  F_ <- X2 * (R_ / X3)^3.5
+  R_ <- maxSVector(0, R_ + Q9 + F_)
+  Qr <- R_ * (1 - (1 + (R_ / X3)^4)^(-0.25))
+  R_ <- R_ - Qr
+  Qd <- maxSVector(0, Q1 + F)
+  return(list(Route = list(StaFlow = Qr + Qd, Store = R_)))
+}
+
