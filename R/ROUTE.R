@@ -288,6 +288,7 @@ ROUTE.IUHG2RES <- function(InData, Param, ...){
 #' @title route from GR4J
 #' @references https://webgr.inrae.fr/en/models/daily-hydrological-model-gr4j/description-of-the-gr4j-model/
 #' @references Perrin, C., Michel, C. and Andréassian, V., 2003. Improvement of a parsimonious model for streamflow simulation. Journal of Hydrology, 279 : 275-289, DOI: 10.1016/S0022-1694(03)00225-7
+#' @importFrom HMtools maxSVector
 #' @param InData indata list, use snow_density(runMode = "VIEW") view the variables and theirs structures
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
 #' @param ... other Parmeters
@@ -316,7 +317,6 @@ ROUTE.Gr4j <- function(InData, Param, ...){
   } else {
     Q9_ori <- 0.9 * InData$Route$WaterSource[(time_step_i) : (time_step_i - UH1_n),]
     Q1_ori <- 0.1 * InData$Route$WaterSource[(time_step_i) : (time_step_i - UH2_n),]
-    browser()
     Q9 <- sum(UH1_ * Q9_ori)
     Q1 <- sum(UH2_ * Q1_ori)
   }
