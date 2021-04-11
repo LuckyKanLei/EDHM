@@ -3,7 +3,7 @@
 \docType{data}
 \name{Data_ReferenceET.PenMon}
 \alias{Data_ReferenceET.PenMon}
-\title{Data_ReferenceET.PenMon.}
+\title{Data_ReferenceET.PenMon}
 \format{
 list of function data(InData, Param, OutData)
 }
@@ -11,6 +11,6 @@ list of function data(InData, Param, OutData)
 Data_ReferenceET.PenMon
 }
 \description{
-Data_ReferenceET.PenMon.
+Data_ReferenceET.PenMon
 }
 \keyword{datasets}

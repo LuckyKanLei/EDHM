@@ -3,7 +3,7 @@
 \docType{data}
 \name{Data_ActualET.Vic}
 \alias{Data_ActualET.Vic}
-\title{Data_ActualET.Vic.}
+\title{Data_ActualET.Vic}
 \format{
 list of function data(InData, Param, OutData)
 }
@@ -11,6 +11,6 @@ list of function data(InData, Param, OutData)
 Data_ActualET.Vic
 }
 \description{
-Data_ActualET.Vic.
+Data_ActualET.Vic
 }
 \keyword{datasets}

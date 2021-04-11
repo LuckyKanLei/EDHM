@@ -3,7 +3,7 @@
 \docType{data}
 \name{Data_INTERCEPTION.Gash}
 \alias{Data_INTERCEPTION.Gash}
-\title{Data_INTERCEPTION.Gash.}
+\title{Data_INTERCEPTION.Gash}
 \format{
 list of function data(InData, Param, OutData)
 }
@@ -11,6 +11,6 @@ list of function data(InData, Param, OutData)
 Data_INTERCEPTION.Gash
 }
 \description{
-Data_INTERCEPTION.Gash.
+Data_INTERCEPTION.Gash
 }
 \keyword{datasets}

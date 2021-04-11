@@ -3,7 +3,7 @@
 \docType{data}
 \name{Data_Infiltration.SER}
 \alias{Data_Infiltration.SER}
-\title{Data_Infiltration.SER.}
+\title{Data_Infiltration.SER}
 \format{
 list of function data(InData, Param, OutData)
 }
@@ -11,6 +11,6 @@ list of function data(InData, Param, OutData)
 Data_Infiltration.SER
 }
 \description{
-Data_Infiltration.SER.
+Data_Infiltration.SER
 }
 \keyword{datasets}

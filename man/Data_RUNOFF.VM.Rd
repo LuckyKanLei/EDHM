@@ -3,7 +3,7 @@
 \docType{data}
 \name{Data_RUNOFF.VM}
 \alias{Data_RUNOFF.VM}
-\title{Data_RUNOFF.VM.}
+\title{Data_RUNOFF.VM}
 \format{
 list of function data(InData, Param, OutData)
 }
@@ -11,6 +11,6 @@ list of function data(InData, Param, OutData)
 Data_RUNOFF.VM
 }
 \description{
-Data_RUNOFF.VM.
+Data_RUNOFF.VM
 }
 \keyword{datasets}

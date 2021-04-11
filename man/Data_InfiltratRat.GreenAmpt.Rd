@@ -3,7 +3,7 @@
 \docType{data}
 \name{Data_InfiltratRat.GreenAmpt}
 \alias{Data_InfiltratRat.GreenAmpt}
-\title{Data_InfiltratRat.GreenAmpt.}
+\title{Data_InfiltratRat.GreenAmpt}
 \format{
 list of function data(InData, Param, OutData)
 }
@@ -11,6 +11,6 @@ list of function data(InData, Param, OutData)
 Data_InfiltratRat.GreenAmpt
 }
 \description{
-Data_InfiltratRat.GreenAmpt.
+Data_InfiltratRat.GreenAmpt
 }
 \keyword{datasets}

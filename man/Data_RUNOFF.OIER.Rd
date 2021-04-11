@@ -3,7 +3,7 @@
 \docType{data}
 \name{Data_RUNOFF.OIER}
 \alias{Data_RUNOFF.OIER}
-\title{Data_RUNOFF.OIER.}
+\title{Data_RUNOFF.OIER}
 \format{
 list of function data(InData, Param, OutData)
 }
@@ -11,6 +11,6 @@ list of function data(InData, Param, OutData)
 Data_RUNOFF.OIER
 }
 \description{
-Data_RUNOFF.OIER.
+Data_RUNOFF.OIER
 }
 \keyword{datasets}

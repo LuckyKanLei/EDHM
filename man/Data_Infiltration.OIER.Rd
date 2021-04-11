@@ -3,7 +3,7 @@
 \docType{data}
 \name{Data_Infiltration.OIER}
 \alias{Data_Infiltration.OIER}
-\title{Data_Infiltration.OIER.}
+\title{Data_Infiltration.OIER}
 \format{
 list of function data(InData, Param, OutData)
 }
@@ -11,6 +11,6 @@ list of function data(InData, Param, OutData)
 Data_Infiltration.OIER
 }
 \description{
-Data_Infiltration.OIER.
+Data_Infiltration.OIER
 }
 \keyword{datasets}

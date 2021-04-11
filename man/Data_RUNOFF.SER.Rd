@@ -3,7 +3,7 @@
 \docType{data}
 \name{Data_RUNOFF.SER}
 \alias{Data_RUNOFF.SER}
-\title{Data_RUNOFF.SER.}
+\title{Data_RUNOFF.SER}
 \format{
 list of function data(InData, Param, OutData)
 }
@@ -11,6 +11,6 @@ list of function data(InData, Param, OutData)
 Data_RUNOFF.SER
 }
 \description{
-Data_RUNOFF.SER.
+Data_RUNOFF.SER
 }
 \keyword{datasets}

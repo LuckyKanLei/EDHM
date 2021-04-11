@@ -3,7 +3,7 @@
 \docType{data}
 \name{Data_BASEFLOW.ARNO}
 \alias{Data_BASEFLOW.ARNO}
-\title{Data_BASEFLOW.ARNO.}
+\title{Data_BASEFLOW.ARNO}
 \format{
 list of function data(InData, Param, OutData)
 }
@@ -11,6 +11,6 @@ list of function data(InData, Param, OutData)
 Data_BASEFLOW.ARNO
 }
 \description{
-Data_BASEFLOW.ARNO.
+Data_BASEFLOW.ARNO
 }
 \keyword{datasets}
