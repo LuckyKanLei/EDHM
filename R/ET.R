@@ -134,10 +134,16 @@ ReferenceET.Hargreaves <- function(InData, Param, ...){
 #' @export ReferenceET.Linacre
 #' @export
 ReferenceET.Linacre <- function(InData, Param, ...) {
+  timN <- Param$PeriodN
+  gridN <- Param$GridN
   Elevation <- InData$GeoData$Elevation
   Latitude <- InData$GeoData$Latitude
+  Elevation <- matrix(rep(Elevation,timN), timN, gridN, byrow = T)
+  Latitude <- matrix(rep(Latitude,timN), timN, gridN, byrow = T)
+
   Ta <- InData$MetData$TAir ## (data$Tmax + data$Tmin) / 2
   Tdew <- get_Dew_point(InData$MetData$Actual_vapor_press)
+
   T_m <- Ta + 0.006 * Elevation
   ET_Linacre <- (500 * T_m /(100 - Latitude)+15*(Ta - Tdew))/(80 - Ta)
   return(list(Evatrans = list(RET = ET_Linacre)))

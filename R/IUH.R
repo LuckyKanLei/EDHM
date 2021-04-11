@@ -115,7 +115,7 @@ makeUH <- function(UHMethond, UHParam, Param){
 #' @return matrix, Discrete unit hydrograph
 #' @export
 makeUHALL <- function(InData, Param, ...){
-  return(UHAll = map2(InData$Confluence$UHMethond, InData$Confluence$UHParam, makeUH, Param))
+  return(UHAll = map2(InData$Route$UHMethond, InData$Route$UHParam, makeUH, Param))
 }
 
 gr4j_SH1 <- function(t, X4){

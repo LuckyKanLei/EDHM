@@ -26,13 +26,13 @@ SNOW <- function(InData, ...) UseMethod("SNOW", InData)
 #' \itemize{
 #' \item Precipitation
 #' }
-#' @export SNOW.Dd
+#' @export SNOW.Ddf
 #' @export
-SNOW.Dd <-function(InData, Param, ...){
-  Snow_Volum_mm <- InData$Snow$Volum_mm + InData$Prec$SnowFall
+SNOW.Ddf <-function(InData, Param, ...){
+  Snow_Volum_mm <- InData$Snow$Volume + InData$Prec$SnowFall
   Melt_Max <- Param$Factor_Day_degree * maxSVector(0, (InData$MetData$TAir - Param$Base_T))
   Melt <- minVector(Melt_Max, Snow_Volum_mm)
-  return(list(Snow = list(Volum_mm = Snow_Volum_mm - Melt),
+  return(list(Snow = list(Volume = Snow_Volum_mm - Melt),
     Prec = list(Precipitation = Melt + InData$Prec$RainFall)))
 }
 
@@ -72,9 +72,9 @@ SNOW.17 <- function(InData, Param, ...) {
   elev <- InData$GeoData$Elevation
   n_day <- InData$TimeData$NDay
 
-  W_i <- InData$Snow$Ice_Volumm # water equivalent of the ice portion of the snow cover (mm)
+  W_i <- InData$Snow$Ice_Volume # water equivalent of the ice portion of the snow cover (mm)
   ATI <- InData$Snow$SN17_ATI # antecedent temperature index (˚C),
-  W_q <- InData$Snow$Liquid_Volumm # liquid water held by the snow (mm)
+  W_q <- InData$Snow$Liquid_Volume # liquid water held by the snow (mm)
   Deficit <- InData$Snow$SN17_HD # heat deficit (mm)
 
   Snow_ <- InData$Prec$SnowFall
@@ -165,8 +165,8 @@ SNOW.17 <- function(InData, Param, ...) {
   W_q <- judge_WbD * (W_q - gmwlos)
   E <- E + gmro
   SWE <- (W_i + W_q)
-  return(list(Snow = list(Ice_Volumm = W_i,
-                          Liquid_Volumm = W_q,
+  return(list(Snow = list(Ice_Volume = W_i,
+                          Liquid_Volume = W_q,
                           SN17_ATI = ATI,
                           SN17_HD = Deficit),
               Prec = list(Precipitation = E)))
