@@ -1,25 +1,25 @@
-#' caculate route with UH
-#' @param InData indata list, use SNOWIntercept(runMode = "VIEW") view the variables and theirs structures
-#' @param ... paramlist, in this R packege ParamAll dataset there are alredy most parameters,
-#' @return StationFlow Q
-#' @export
-CONFLUENCE <- function(InData, ...) UseMethod("CONFLUENCE", InData)
-#' caculate route with UH
+#' @title from gridflow to station flow route with UH
 #' @param InData indata list, use snow_density(runMode = "VIEW") view the variables and theirs structures
-#' RunoffFlowList list of Inputdata(Runoff)
+#' @param ... paramlist, in this R packege ParamAll dataset there are alredy most parameters,
+#' @export
+ROUTE <- function(InData, ...) UseMethod("ROUTE", InData)
+
+#' @title use IUH calculate flow from grid to station
+#' @param InData indata list, use snow_density(runMode = "VIEW") view the variables and theirs structures
+#' RunoffFlowList list of Inputdata(Runoff) [[1]] for surface flow, [[2]] for base flow
 #' UHAll all of the UH
 #' TypeGridID all of Grid type in geological matrix
 #' TransAll all of translate matrix
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
 #' @param ... other Parmeters
-#' @return StationFlow Q
-#' @export CONFLUENCE.G2RES
+#' @return station flow
+#' @export ROUTE.G2RES
 #' @export
-CONFLUENCE.G2RES <- function(InData, Param, ...){
-  RunoffFlowList <- InData$Confluence$WaterSource
-  UHAll <- InData$Confluence$UHAll
-  TypeGridID <- InData$Confluence$TypeGridID
-  TransAll <- InData$Confluence$TransAll
+ROUTE.G2RES <- function(InData, Param, ...){
+  RunoffFlowList <- InData$Route$WaterSource
+  UHAll <- InData$Route$UHAll
+  TypeGridID <- InData$Route$TypeGridID
+  TransAll <- InData$Route$TransAll
 
   SfcFlowAllGrid <- RunoffFlowList[[1]]
   BasFlowAllGrid <- RunoffFlowList[[2]]
@@ -39,6 +39,7 @@ CONFLUENCE.G2RES <- function(InData, Param, ...){
 
   return(list(Route = list(StaFlow = StationFlow)))
 }
+
 #' caculate route with UH
 #' @param InData indata list, use snow_density(runMode = "VIEW") view the variables and theirs structures
 #' RunoffFlowList list of Inputdata(Runoff)
@@ -50,13 +51,13 @@ CONFLUENCE.G2RES <- function(InData, Param, ...){
 #' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
 #' @param ... other Parmeters
 #' @return StationFlow Q
-#' @export CONFLUENCE.WSnGSmGn
+#' @export ROUTE.WSnGSmGn
 #' @export
-CONFLUENCE.WSnGSmGn <- function(InData, Param, ...){
-  WaterSource <- InData$Confluence$WaterSource
+ROUTE.WSnGSmGn <- function(InData, Param, ...){
+  WaterSource <- InData$Route$WaterSource
   UHAll <- InData$IUH$UHAll
-  TypeGridID <- InData$Confluence$TypeGridID
-  TransAll <- InData$Confluence$TransAll
+  TypeGridID <- InData$Route$TypeGridID
+  TransAll <- InData$Route$TransAll
   WSN <- Param$WSN
   GSN <- Param$GSN
   RiverFlow <- 0.
@@ -73,6 +74,54 @@ CONFLUENCE.WSnGSmGn <- function(InData, Param, ...){
 
   return(list(Route = list(StaFlow = RiverFlow)))
 }
+
+#' @title route from GR4J
+#' @references https://webgr.inrae.fr/en/models/daily-hydrological-model-gr4j/description-of-the-gr4j-model/
+#' @references Perrin, C., Michel, C. and Andréassian, V., 2003. Improvement of a parsimonious model for streamflow simulation. Journal of Hydrology, 279 : 275-289, DOI: 10.1016/S0022-1694(03)00225-7
+#' @importFrom HMtools maxSVector
+#' @param InData indata list, use snow_density(runMode = "VIEW") view the variables and theirs structures
+#' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
+#' @param ... other Parmeters
+#' @return station flow
+#' @export ROUTE.Gr4j
+#' @export
+ROUTE.Gr4j <- function(InData, Param, ...){
+  X2 <- Param$Gr4j_X2
+  X3 <- Param$Gr4j_X3
+  X4 <- Param$Gr4j_X4
+  time_step_i <- Param$time_step_i
+  UH1_ <- InData$Route$Gr4j_UH1
+  UH2_ <- InData$Route$Gr4j_UH2
+
+  UH1_n <- ceiling(X4)
+  UH2_n <- ceiling(2 * X4)
+  if(time_step_i < (UH2_n + 1)) {
+    UH1_ <- c(UH1_, UH1_ * 0)
+    UH1_ <- UH1_[1:time_step_i,]
+    UH2_ <- UH2_[1:time_step_i,]
+    Q9_ori <- 0.9 * InData$Route$WaterSource[(time_step_i) : 1,]
+    Q1_ori <- 0.1 * InData$Route$WaterSource[(time_step_i) : 1,]
+    Q9 <- sum(UH1_ * Q9_ori)
+    Q1 <- sum(UH2_ * Q1_ori)
+
+  } else {
+    Q9_ori <- 0.9 * InData$Route$WaterSource[(time_step_i) : (time_step_i - UH1_n),]
+    Q1_ori <- 0.1 * InData$Route$WaterSource[(time_step_i) : (time_step_i - UH2_n),]
+    Q9 <- sum(UH1_ * Q9_ori)
+    Q1 <- sum(UH2_ * Q1_ori)
+  }
+  R_ <- InData$Route$Store
+  F_ <- X2 * (R_ / X3)^3.5
+  R_ <- maxSVector(0, R_ + Q9 + F_)
+  Qr <- R_ * (1 - (1 + (R_ / X3)^4)^(-0.25))
+  R_ <- R_ - Qr
+  Qd <- maxSVector(0, Q1 + F)
+  return(list(Route = list(StaFlow = Qr + Qd, Store = R_)))
+}
+
+
+
+
 
 #' cut GridFlow from AllGridFlow to AimGridFlow and OtherGridFlow, from 1 cut to 2. Get list with $OtherGridFlow and $AimGridFlow
 #' @importFrom plyr join
@@ -265,67 +314,7 @@ fctGTransMatAll <- function(G2AimGList, TypeGridID){
   GTransMat <- map2(G2AimGList, TypeGridID, fctMakeGridTranslateMatrix)
 }
 
-#' @title from gridflow to station flow
-#' @param InData indata list, use snow_density(runMode = "VIEW") view the variables and theirs structures
-#' @param ... paramlist, in this R packege ParamAll dataset there are alredy most parameters,
-#' @export
-ROUTE <- function(InData, ...) UseMethod("ROUTE", InData)
-
-#' @title use IUH calculate flow from grid to station
-#' @param InData indata list, use snow_density(runMode = "VIEW") view the variables and theirs structures
-#' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
-#' @param ... other Parmeters
-#' @return station flow
-#' @export ROUTE.IUHG2RES
-#' @export
-ROUTE.IUHG2RES <- function(InData, Param, ...){
-  InData$Confluence$UHAll <- makeUHALL(InData, Param)
-  return(CONFLUENCE.G2RES(InData, Param))
-}
 
 
 
-#' @title route from GR4J
-#' @references https://webgr.inrae.fr/en/models/daily-hydrological-model-gr4j/description-of-the-gr4j-model/
-#' @references Perrin, C., Michel, C. and Andréassian, V., 2003. Improvement of a parsimonious model for streamflow simulation. Journal of Hydrology, 279 : 275-289, DOI: 10.1016/S0022-1694(03)00225-7
-#' @importFrom HMtools maxSVector
-#' @param InData indata list, use snow_density(runMode = "VIEW") view the variables and theirs structures
-#' @param Param paramlist, in this R packege ParamAll dataset there are alredy most parameters,
-#' @param ... other Parmeters
-#' @return station flow
-#' @export ROUTE.Gr4j
-#' @export
-ROUTE.Gr4j <- function(InData, Param, ...){
-  X2 <- Param$Gr4j_X2
-  X3 <- Param$Gr4j_X3
-  X4 <- Param$Gr4j_X4
-  time_step_i <- Param$time_step_i
-  UH1_ <- Param$Gr4j_UH1
-  UH2_ <- Param$Gr4j_UH2
-
-  UH1_n <- ceiling(X4)
-  UH2_n <- ceiling(2 * X4)
-  if(time_step_i < (UH2_n + 1)) {
-    UH1_ <- c(UH1_, UH1_ * 0)
-    UH1_ <- UH1_[1:time_step_i,]
-    UH2_ <- UH2_[1:time_step_i,]
-    Q9_ori <- 0.9 * InData$Route$WaterSource[(time_step_i) : 1,]
-    Q1_ori <- 0.1 * InData$Route$WaterSource[(time_step_i) : 1,]
-    Q9 <- sum(UH1_ * Q9_ori)
-    Q1 <- sum(UH2_ * Q1_ori)
-
-  } else {
-    Q9_ori <- 0.9 * InData$Route$WaterSource[(time_step_i) : (time_step_i - UH1_n),]
-    Q1_ori <- 0.1 * InData$Route$WaterSource[(time_step_i) : (time_step_i - UH2_n),]
-    Q9 <- sum(UH1_ * Q9_ori)
-    Q1 <- sum(UH2_ * Q1_ori)
-  }
-  R_ <- InData$Route$Store
-  F_ <- X2 * (R_ / X3)^3.5
-  R_ <- maxSVector(0, R_ + Q9 + F_)
-  Qr <- R_ * (1 - (1 + (R_ / X3)^4)^(-0.25))
-  R_ <- R_ - Qr
-  Qd <- maxSVector(0, Q1 + F)
-  return(list(Route = list(StaFlow = Qr + Qd, Store = R_)))
-}
 
