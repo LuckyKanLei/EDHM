@@ -77,7 +77,7 @@ MODEL.CVIC <- function(TimeVariData, TimeInvariData, Param, ...){
     # map(PDOut$Prec, mean)
 
     ## snow melt ##
-    SNOut <- SNOW.Dd(PeriodData, Param)
+    SNOut <- SNOW.Ddf(PeriodData, Param)
     PeriodData <- left_merge(PeriodData, SNOut)
     # map(SNOut$Prec, mean)
     ## base flow ####
@@ -111,8 +111,8 @@ MODEL.CVIC <- function(TimeVariData, TimeInvariData, Param, ...){
                         dim = c(Param$GridN, Param$PeriodN)))
   WaterSource <- map(StoreData$Ground, function(mm_m3_s1) mm_m3_s1 * Unit_Trans)
   ## route ####
-  G2AimGAll <- ModelData$Confluence$G2AimGAll
-  ModelData$Confluence$UHParam <- list(list(StreamLength = G2AimGAll[[1]][,3],
+  G2AimGAll <- ModelData$Route$G2AimGAll
+  ModelData$Route$UHParam <- list(list(StreamLength = G2AimGAll[[1]][,3],
                        RiverheadNumber = Param$UPPaList[1],
                        WaveVelocity = Param$UPPaList[4]),
                   list(StreamLength = G2AimGAll[[1]][,3],
@@ -125,11 +125,11 @@ MODEL.CVIC <- function(TimeVariData, TimeInvariData, Param, ...){
                        RiverheadNumber = Param$UPPaList[3],
                        WaveVelocity = Param$UPPaList[7]))
 
-  ModelData$Confluence$WaterSource <- WaterSource
+  ModelData$Route$WaterSource <- WaterSource
   MUOut <- makeUHALL(ModelData, Param)
-  ModelData$Confluence <- left_merge(ModelData$Confluence, MUOut)
+  ModelData$Route <- left_merge(ModelData$Route, MUOut)
 
-  RTOut <- ROUTE.IUHG2RES(ModelData, Param)
+  RTOut <- ROUTE.G2RES(ModelData, Param)
 
   return(RTOut)
 }

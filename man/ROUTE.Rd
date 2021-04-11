@@ -2,7 +2,7 @@
 % Please edit documentation in R/ROUTE.R
 \name{ROUTE}
 \alias{ROUTE}
-\title{from gridflow to station flow}
+\title{from gridflow to station flow route with UH}
 \usage{
 ROUTE(InData, ...)
 }
@@ -12,5 +12,5 @@ ROUTE(InData, ...)
 \item{...}{paramlist, in this R packege ParamAll dataset there are alredy most parameters,}
 }
 \description{
-from gridflow to station flow
+from gridflow to station flow route with UH
 }

@@ -1,7 +1,7 @@
 #' @title Get an efficiency coefficient from the parameter group
 #' @import hydroGOF
 #' @param Paramter_Calibrate parameter for the parameter that need to calibrate
-#' @param fct_Run_Model
+#' @param fct_Run_Model function for Run_Model
 #' @param TimeVariData Time Vari Data
 #' @param TimeInvariData Time invariabel Data
 #' @param Paramter_fest parameter for the parameter that don't need to calibrate
