@@ -223,10 +223,10 @@
 # ## Route ####
 # Data_ROUTE.Gr4j <-
 #   list(InData = left_merge(t_vari.hm.list(),
-#                            list(WaterSource = t_vari.array(0, c(3)),
-#                                 Store = t_vari.array(0, c(3)),
-#                                 Gr4j_UH1 = t_vari.array(0, c(3)),
-#                                 Gr4j_UH2 = t_vari.array(0, c(3)))),
+#                            list(Route = list(WaterSource = t_vari.array(0, c(3)),
+#                                              Store = t_vari.array(0, c(3)),
+#                                              Gr4j_UH1 = t_vari.array(0, c(3)),
+#                                              Gr4j_UH2 = t_vari.array(0, c(3))))),
 #        Param = list(Gr4j_X2 = t_vari.array(0, c(3)),
 #                     Gr4j_X3 = t_vari.array(0, c(3)),
 #                     Gr4j_X4 = t_vari.array(0, c(3)),
@@ -236,10 +236,10 @@
 #                                               Store = t_vari.array(0, c(3))))))
 # Data_ROUTE.G2RES <-
 #   list(InData = left_merge(t_vari.hm.list(),
-#                            list(WaterSource = t_vari.array(0, c(3)),
-#                                 UHAll = t_vari.array(0, c(3)),
-#                                 TypeGridID = t_vari.array(0, c(3)),
-#                                 TransAll = t_vari.array(0, c(3)))),
+#                            list(Route = list(WaterSource = t_vari.array(0, c(3)),
+#                                              UHAll = t_vari.array(0, c(3)),
+#                                              TypeGridID = t_vari.array(0, c(3)),
+#                                              TransAll = t_vari.array(0, c(3))))),
 #        Param = list(Gr4j_X2 = t_vari.array(0, c(3)),
 #                     Gr4j_X3 = t_vari.array(0, c(3)),
 #                     Gr4j_X4 = t_vari.array(0, c(3)),
@@ -249,7 +249,7 @@
 #
 #
 # ## Pre_dataset ####
-# library(HMtools)
+# # library(HMtools)
 # eval(parse(text = paste0("Pre_dataset <- merge_Data_Modul(",paste0(ls(), collapse = ", "), ")")))
 #
 # ## write in Package ####
