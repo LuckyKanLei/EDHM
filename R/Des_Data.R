@@ -50,7 +50,7 @@
 # Des_dataset$Route$StaFlow = 'Station Flow in the seted grid'
 # Des_dataset$Snow$Ice_Volume = 'Soild Ice Volume, not depth'
 # Des_dataset$Snow$Liquid_Volume = 'Liquid Volume'
-# Des_dataset$Snow$SN17_ATI = '-'
-# Des_dataset$Snow$SN17_HD = '-'
+# Des_dataset$Snow$SN17_ATI = '--'
+# Des_dataset$Snow$SN17_HD = '--'
 # Des_dataset$Snow$Volume = 'Summe Volume of Ice and liquid water, not depth'
 #
