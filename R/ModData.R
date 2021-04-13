@@ -89,14 +89,14 @@
 # ## runoff ####
 # Data_InfiltratRat.GreenAmpt <-
 #   list(InData = left_merge(t_vari.hm.list(),
-#                            list(Ground = list(Conductivity = t_vari.array(0, c(3)),
-#                                               WettingFrontSuction = t_vari.array(0, c(3)),
-#                                               Porosity = t_vari.array(0, c(3)),
-#                                               MoistureVolume = t_vari.array(0, c(3)),
-#                                               Depth = t_vari.array(0, c(3))))),
-#        Param = list(),
+#                            list(Ground = list(MoistureVolume = t_vari.array(0, c(3)),
+#                                               Depth = t_vari.array(0, c(3))),
+#                                 SoilData = list(Conductivity = t_vari.array(0, c(3)),
+#                                                 WettingFrontSuction = t_vari.array(0, c(3)),
+#                                                 Porosity = t_vari.array(0, c(3))))),
+#        Param = list(GridN = c(1, 9999)),
 #        OutData = left_merge(t_vari.hm.list(),
-#                             list()))
+#                             list(Infilt = list(InfiltrationRat = t_vari.array(0, c(3))))))
 #
 # Data_Infiltration.SER <-
 #   list(InData = left_merge(t_vari.hm.list(),
@@ -215,7 +215,7 @@
 #                                 Intercept = list(Interception = t_vari.array(0, c(3))),
 #                                 SoilData = list(Porosity = t_vari.array(0, c(3)),
 #                                                 SaturatedConductivity = t_vari.array(0, c(3))))),
-#        Param = list(),
+#        Param = list(GridN = c(1, 9999)),
 #        OutData = left_merge(t_vari.hm.list(),
 #                             list(Ground = list(Overflow = t_vari.array(0, c(3)),
 #                                                ZoneMoistureVolume = t_vari.array(0, c(3))))))
@@ -248,12 +248,18 @@
 #                             list(Route = list(StaFlow = t_vari.array(0, c(3))))))
 #
 #
+# ## write data.R ####
+# write(paste0('#\' ', ls(), '\n#\' @format list of function data(InData, Param, OutData)\n', '\"', ls(), '\"\n'),
+#       "R\\data.R")
 # ## Pre_dataset ####
 # # library(HMtools)
 # eval(parse(text = paste0("Pre_dataset <- merge_Data_Modul(",paste0(ls(), collapse = ", "), ")")))
-#
+# Pre_dataset <- left_merge(Pre_dataset$InData, Pre_dataset$OutData)
 # ## write in Package ####
+# ## goto Unit_Data.R and Des_Data.R ####
+# source("R\\Unit_Data.R")
+# source("R\\Des_Data.R")
+#
 # eval(parse(text = paste0("use_data(",paste0(ls(), collapse = ", "), ", internal = F, overwrite = T)")))
-# ## for data.R ####
-# write(paste0('#\' ', ls(), '\n#\' @format list of function data(InData, Param, OutData)\n', '\"', ls(), '\"\n'),
-#       "R\\data.R")
+#
+# write(paste0('\n#\' ', c('Pre_dataset', 'Des_dataset', 'Unit_dataset'), '\n#\' @format list of all variable\n\"', c('Pre_dataset', 'Des_dataset', 'Unit_dataset'),'\"'), "R\\data.R", append = T)

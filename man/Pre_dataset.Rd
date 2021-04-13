@@ -5,7 +5,7 @@
 \alias{Pre_dataset}
 \title{Pre_dataset}
 \format{
-list of function data(InData, Param, OutData)
+list of all variable
 }
 \usage{
 Pre_dataset

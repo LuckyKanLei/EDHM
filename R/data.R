@@ -78,7 +78,15 @@
 #' @format list of function data(InData, Param, OutData)
 "Data_SNOW.Ddf"
 
+
 #' Pre_dataset
-#' @format list of function data(InData, Param, OutData)
+#' @format list of all variable
 "Pre_dataset"
 
+#' Des_dataset
+#' @format list of all variable
+"Des_dataset"
+
+#' Unit_dataset
+#' @format list of all variable
+"Unit_dataset"
